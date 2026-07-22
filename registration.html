@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Admin Login</title>
+<title>Registration</title>
 </head>
 
 <body>
@@ -14,37 +14,54 @@
 
 <hr>
 
+<h2 align="center">Registration Form</h2>
+
 <center>
 
 <p>
 <a href="homepage.html">⬅ Back to Home Page</a>
 </p>
 
-<fieldset style="width:300px;padding:20px;">
+<table>
+<tr>
+<td>
 
-<legend><h3>Admin Login</h3></legend>
+<fieldset style="width:350px;padding:20px;">
 
-<form action="dashboard.html">
+<legend><h2>Sign Up</h2></legend>
+
+<form action="index.html">
 
 Full Name:<br>
+<input type="text" required><br><br>
+
+Last Name:<br>
 <input type="text" required><br><br>
 
 Email:<br>
 <input type="email" required><br><br>
 
+Mobile:<br>
+<input type="number" required><br><br>
+
 Password:<br>
 <input type="password" required><br><br>
 
-<button type="submit">Login</button>
+Gender:<br>
+
+<input type="radio" name="gender"> Male<br>
+<input type="radio" name="gender"> Female<br>
+<input type="radio" name="gender"> Other<br><br>
+
+<button type="submit">Register</button>
 
 </form>
 
 </fieldset>
 
-<br>
-
-<a href="homepage.html">Login for User</a><br>
-<a href="registration.html">Don't have an account?</a>
+</td>
+</tr>
+</table>
 
 </center>
 

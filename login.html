@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Hub - Login</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+        }
+
+        .box {
+            border: 1px solid #ccc;
+            padding: 30px;
+            width: 320px;
+            border-radius: 6px;
+        }
+
+        h2 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-size: 14px;
+        }
+
+        input {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 14px;
+            box-sizing: border-box;
+        }
+
+        button {
+            width: 100%;
+            padding: 10px;
+            font-size: 15px;
+            cursor: pointer;
+            border: 1px solid #333;
+            border-radius: 4px;
+            background: white;
+        }
+
+        button:hover {
+            background: #f0f0f0;
+        }
+
+        .error {
+            color: red;
+            font-size: 13px;
+            margin-bottom: 10px;
+            display: none;
+        }
+
+        .bottom {
+            text-align: center;
+            margin-top: 15px;
+            font-size: 13px;
+        }
+
+        .bottom a {
+            text-decoration: none;
+            color: black;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="box">
+        <h2>Student Hub Login</h2>
+
+        <p class="error" id="error">Invalid enrollment number or password.</p>
+
+        <form onsubmit="login(event)">
+            <label>Enrollment Number</label>
+            <input type="text" id="enrollment" placeholder="e.g. STU2024001" required />
+
+            <label>Password</label>
+            <input type="password" id="password" placeholder="Enter password" required />
+
+            <button type="submit">Login</button>
+        </form>
+
+        <div class="bottom">
+            Don't have an account? <a href="register.html">Register</a>
+        </div>
+    </div>
+
+    <script>
+        function login(e) {
+            e.preventDefault();
+            const enrollment = document.getElementById('enrollment').value;
+            const password = document.getElementById('password').value;
+
+            if (enrollment === 'STU2024001' && password === 'password123') {
+                localStorage.setItem('student_user', JSON.stringify({
+                    full_name: 'John Doe',
+                    enrollment_number: enrollment,
+                    department: 'Computer Science',
+                    semester: 4
+                }));
+                window.location.href = 'dashboard.html';
+            } else {
+                document.getElementById('error').style.display = 'block';
+            }
+        }
+    </script>
+
+</body>
+</html>
