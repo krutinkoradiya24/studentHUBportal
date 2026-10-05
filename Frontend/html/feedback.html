@@ -1,0 +1,163 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Student Hub Portal - Feedback</title>
+    <link rel="stylesheet" href="../css/style.css?v=1790904735.40533" />
+    <link rel="stylesheet" href="../css/feedback.css?v=1790895069.40284" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+  </head>
+  <body class="dashboard-layout">
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-header">
+        <img
+          src="logo.png"
+          alt="CHARUSAT Logo"
+          style="
+            height: 50px;
+            background: white;
+            padding: 5px;
+            border-radius: 50%;
+            width: 50px;
+            object-fit: contain;
+          "
+        /> <span style="font-weight: 700; font-size: 1.3rem; color: var(--primary); letter-spacing: 0.5px; margin-left: 10px;">Student Hub</span>
+        <button id="close-sidebar"><i class="fas fa-times"></i></button>
+      </div>
+      <nav class="sidebar-nav">
+        <a href="dashboard.html"><i class="fas fa-home"></i> Dashboard</a>
+        <a href="course.html"><i class="fas fa-book"></i> Courses</a>
+        <a href="assignments.html"><i class="fas fa-tasks"></i> Assignments</a>
+        <a href="attendance.html"
+          ><i class="fas fa-calendar-check"></i> Attendance</a
+        >
+        <a href="results.html"><i class="fas fa-chart-bar"></i> Results</a>
+        <a href="notice.html"><i class="fas fa-bell"></i> Notices</a>
+        <a href="e-library.html"
+          ><i class="fas fa-book-reader"></i> E-Library</a
+        >
+        <a href="fee_receipt.html"
+          ><i class="fas fa-receipt"></i> Fee Receipt</a
+        >
+        <a href="counselling.html"
+          ><i class="fas fa-comments"></i> Counselling</a
+        >
+        <a href="feedback.html" class="active"><i class="fas fa-comment-dots"></i> Feedback</a>
+        <a href="contact.html"><i class="fas fa-envelope"></i> Contact</a>
+        <a href="profile.html"><i class="fas fa-user"></i> Profile</a>
+        <a href="login.html" class="logout-link"
+          ><i class="fas fa-sign-out-alt"></i> Logout</a
+        >
+      </nav>
+    </aside>
+
+    <main class="main-content">
+      <header class="top-header">
+        <div class="header-left">
+          <button
+            id="hamburger-btn"
+            class="hamburger-btn"
+            aria-label="Open navigation"
+            aria-expanded="false"
+          >
+            <i class="fas fa-bars"></i>
+          </button>
+        </div>
+        <div class="header-right">
+          <button
+            id="theme-toggle"
+            class="theme-toggle-btn"
+            aria-label="Toggle theme"
+          >
+            <i class="fas fa-moon"></i>
+          </button>
+          <div class="notification-icon">
+            <i class="fas fa-bell"></i>
+            <span class="badge">3</span>
+          </div>
+          <div class="user-profile">
+            <img
+              src="https://ui-avatars.com/api/?name=Krutin+Koradiya&background=random"
+              alt="Profile"
+            />
+            <span>Krutin Koradiya</span>
+          </div>
+        </div>
+      </header>
+
+      <div class="content-wrapper">
+        <h1>Feedback</h1>
+        <p>
+          Welcome to the Feedback page. This section is under development but
+          structure is ready.
+        </p>
+      </div>
+
+      <footer class="site-footer">
+        <div class="footer-container">
+          <div class="footer-section">
+            <h3>About Student Hub</h3>
+            <p>
+              Student Hub is a centralized student portal designed to provide
+              students with easy access to academic information and college
+              services.
+            </p>
+            <p>
+              Students can manage courses, assignments, attendance, results,
+              notices, fees, e-library and counselling from one platform.
+            </p>
+          </div>
+          <div class="footer-section">
+            <h3>Quick Links</h3>
+            <ul>
+              <li><a href="homepage.html">Home</a></li>
+              <li><a href="dashboard.html">Dashboard</a></li>
+              <li><a href="course.html">Courses</a></li>
+              <li><a href="assignments.html">Assignments</a></li>
+              <li><a href="attendance.html">Attendance</a></li>
+              <li><a href="results.html">Results</a></li>
+              <li><a href="e-library.html">E-Library</a></li>
+            </ul>
+          </div>
+          <div class="footer-section">
+            <h3>Student Services</h3>
+            <ul>
+              <li><a href="notice.html">Notices</a></li>
+              <li><a href="fee_receipt.html">Fee Receipt</a></li>
+              <li><a href="counselling.html">Counselling</a></li>
+              <li><a href="feedback.html" class="active">Feedback</a></li>
+              <li><a href="faculty.html">Faculty</a></li>
+              <li><a href="contact.html">Contact</a></li>
+            </ul>
+          </div>
+          <div class="footer-section">
+            <h3>Contact</h3>
+            <div class="footer-contact-info">
+              <p><i class="fas fa-map-marker-alt"></i> College Address</p>
+              <p><i class="fas fa-envelope"></i> Email</p>
+              <p><i class="fas fa-phone-alt"></i> Phone</p>
+              <p><i class="fas fa-clock"></i> Office Hours</p>
+            </div>
+          </div>
+        </div>
+        <div class="footer-bottom">
+          <p>&copy; 2026 Student Hub. All Rights Reserved.</p>
+        </div>
+      </footer>
+    </main>
+    
+  
+    <script src="../js/api.js?v=1"></script>
+    <script src="../js/utils.js?v=1"></script>
+    <script src="../js/pagination.js?v=1"></script>
+    <script src="../js/students.js?v=1"></script>
+    <script src="../js/events.js?v=1"></script>
+    <script src="../js/faqs.js?v=1"></script>
+    <script src="../js/script.js?v=1790888521566"></script>
+
+  </body>
+</html>

@@ -1,0 +1,122 @@
+[
+  {
+    "id": 1,
+    "question": "How do I handle FAQ topic 1?",
+    "answer": "To handle FAQ topic 1, you should visit the respective section on the Student Hub dashboard and follow the standard procedure.",
+    "category": "Attendance"
+  },
+  {
+    "id": 2,
+    "question": "How do I handle FAQ topic 2?",
+    "answer": "To handle FAQ topic 2, you should visit the respective section on the Student Hub dashboard and follow the standard procedure.",
+    "category": "Courses"
+  },
+  {
+    "id": 3,
+    "question": "How do I handle FAQ topic 3?",
+    "answer": "To handle FAQ topic 3, you should visit the respective section on the Student Hub dashboard and follow the standard procedure.",
+    "category": "Exams"
+  },
+  {
+    "id": 4,
+    "question": "How do I handle FAQ topic 4?",
+    "answer": "To handle FAQ topic 4, you should visit the respective section on the Student Hub dashboard and follow the standard procedure.",
+    "category": "Fees"
+  },
+  {
+    "id": 5,
+    "question": "How do I handle FAQ topic 5?",
+    "answer": "To handle FAQ topic 5, you should visit the respective section on the Student Hub dashboard and follow the standard procedure.",
+    "category": "General"
+  },
+  {
+    "id": 6,
+    "question": "How do I handle FAQ topic 6?",
+    "answer": "To handle FAQ topic 6, you should visit the respective section on the Student Hub dashboard and follow the standard procedure.",
+    "category": "Attendance"
+  },
+  {
+    "id": 7,
+    "question": "How do I handle FAQ topic 7?",
+    "answer": "To handle FAQ topic 7, you should visit the respective section on the Student Hub dashboard and follow the standard procedure.",
+    "category": "Courses"
+  },
+  {
+    "id": 8,
+    "question": "How do I handle FAQ topic 8?",
+    "answer": "To handle FAQ topic 8, you should visit the respective section on the Student Hub dashboard and follow the standard procedure.",
+    "category": "Exams"
+  },
+  {
+    "id": 9,
+    "question": "How do I handle FAQ topic 9?",
+    "answer": "To handle FAQ topic 9, you should visit the respective section on the Student Hub dashboard and follow the standard procedure.",
+    "category": "Fees"
+  },
+  {
+    "id": 10,
+    "question": "How do I handle FAQ topic 10?",
+    "answer": "To handle FAQ topic 10, you should visit the respective section on the Student Hub dashboard and follow the standard procedure.",
+    "category": "General"
+  },
+  {
+    "id": 11,
+    "question": "How do I handle FAQ topic 11?",
+    "answer": "To handle FAQ topic 11, you should visit the respective section on the Student Hub dashboard and follow the standard procedure.",
+    "category": "Attendance"
+  },
+  {
+    "id": 12,
+    "question": "How do I handle FAQ topic 12?",
+    "answer": "To handle FAQ topic 12, you should visit the respective section on the Student Hub dashboard and follow the standard procedure.",
+    "category": "Courses"
+  },
+  {
+    "id": 13,
+    "question": "How do I handle FAQ topic 13?",
+    "answer": "To handle FAQ topic 13, you should visit the respective section on the Student Hub dashboard and follow the standard procedure.",
+    "category": "Exams"
+  },
+  {
+    "id": 14,
+    "question": "How do I handle FAQ topic 14?",
+    "answer": "To handle FAQ topic 14, you should visit the respective section on the Student Hub dashboard and follow the standard procedure.",
+    "category": "Fees"
+  },
+  {
+    "id": 15,
+    "question": "How do I handle FAQ topic 15?",
+    "answer": "To handle FAQ topic 15, you should visit the respective section on the Student Hub dashboard and follow the standard procedure.",
+    "category": "General"
+  },
+  {
+    "id": 16,
+    "question": "How do I handle FAQ topic 16?",
+    "answer": "To handle FAQ topic 16, you should visit the respective section on the Student Hub dashboard and follow the standard procedure.",
+    "category": "Attendance"
+  },
+  {
+    "id": 17,
+    "question": "How do I handle FAQ topic 17?",
+    "answer": "To handle FAQ topic 17, you should visit the respective section on the Student Hub dashboard and follow the standard procedure.",
+    "category": "Courses"
+  },
+  {
+    "id": 18,
+    "question": "How do I handle FAQ topic 18?",
+    "answer": "To handle FAQ topic 18, you should visit the respective section on the Student Hub dashboard and follow the standard procedure.",
+    "category": "Exams"
+  },
+  {
+    "id": 19,
+    "question": "How do I handle FAQ topic 19?",
+    "answer": "To handle FAQ topic 19, you should visit the respective section on the Student Hub dashboard and follow the standard procedure.",
+    "category": "Fees"
+  },
+  {
+    "id": 20,
+    "question": "How do I handle FAQ topic 20?",
+    "answer": "To handle FAQ topic 20, you should visit the respective section on the Student Hub dashboard and follow the standard procedure.",
+    "category": "General"
+  }
+]

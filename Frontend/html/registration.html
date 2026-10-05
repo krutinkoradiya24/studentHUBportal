@@ -1,0 +1,154 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Student Hub Portal - Registration</title>
+    <link rel="stylesheet" href="../css/style.css?v=1790904735.40533" />
+
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+  </head>
+  <body class="auth-layout">
+        <div class="auth-container" style="max-width: 1000px; width: 90%; padding: 40px 20px;">
+      <div class="auth-card" style="display: grid; grid-template-columns: 1fr 1fr; overflow: hidden; padding: 0;">
+        <div class="auth-left" style="background: linear-gradient(135deg, var(--primary), var(--primary-light)); padding: 50px; color: white; display: flex; flex-direction: column; justify-content: center; align-items: flex-start; gap: 20px;">
+          <img src="images.png" alt="Student Hub" style="height: 60px; object-fit: contain; background: white; padding: 10px; border-radius: 10px;" />
+          <h2 style="font-size: 2.5rem; margin-top: 20px;">Join Student Hub</h2>
+          <p style="font-size: 1.1rem; opacity: 0.9;">Create an account to manage your academic journey seamlessly from one place.</p>
+          <ul style="list-style: none; padding: 0; margin-top: 20px; display: flex; flex-direction: column; gap: 15px;">
+            <li><i class="fas fa-check-circle"></i> Centralized Portal</li>
+            <li><i class="fas fa-check-circle"></i> Instant Notifications</li>
+            <li><i class="fas fa-check-circle"></i> Secure Access</li>
+          </ul>
+        </div>
+        <div class="auth-right" style="padding: 50px;">
+          <div class="auth-header">
+            <h2>Student Registration</h2>
+            <p>Create your Student Hub account</p>
+          </div>
+                <form id="registrationForm" novalidate style="position: relative;">
+          <!-- Success Message Container -->
+          <div id="successMessage" style="display: none; background: var(--success); color: white; padding: 15px; border-radius: 8px; margin-bottom: 20px; text-align: center; font-weight: bold;">
+            Registration successful!
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; align-items: start;">
+            <!-- 1. Full Name -->
+            <div class="form-group" style="grid-column: 1 / -1">
+              <label for="fullName">Full Name</label>
+              <input type="text" id="fullName" name="fullName" required minlength="2" maxlength="50" pattern="^[A-Za-z ]{2,50}$" placeholder="e.g. Krutin Koradiya" autocomplete="name" aria-describedby="nameError" aria-invalid="false" />
+              <span id="nameError" class="error-message" style="display:none; color: var(--danger); font-size: 0.85rem; margin-top: 5px;">Please enter a valid name (2-50 characters, alphabets and spaces only).</span>
+            </div>
+
+            <!-- 2. Email -->
+            <div class="form-group">
+              <label for="email">Email Address</label>
+              <input type="email" id="email" name="email" required pattern="^[^\s@]+@[^\s@]+\.[^\s@]+$" placeholder="student@example.com" autocomplete="email" aria-describedby="emailError" aria-invalid="false" />
+              <span id="emailError" class="error-message" style="display:none; color: var(--danger); font-size: 0.85rem; margin-top: 5px;">Please enter a valid email address.</span>
+            </div>
+
+            <!-- 3. Mobile Number -->
+            <div class="form-group">
+              <label for="mobile">Mobile Number</label>
+              <input type="tel" id="mobile" name="mobile" required pattern="^[6-9][0-9]{9}$" placeholder="9876543210" autocomplete="tel" aria-describedby="mobileError" aria-invalid="false" />
+              <span id="mobileError" class="error-message" style="display:none; color: var(--danger); font-size: 0.85rem; margin-top: 5px;">Enter a valid 10-digit mobile number starting with 6-9.</span>
+            </div>
+
+            <!-- 4. Password -->
+            <div class="form-group">
+              <label for="password">Password</label>
+              <input type="password" id="password" name="password" required placeholder="Create password" aria-describedby="passwordError passwordStrength" aria-invalid="false" />
+              <div id="passwordStrength" class="password-strength" style="font-size: 0.85rem; margin-top: 5px; font-weight: 600;"></div>
+              <div class="strength-bar-container" style="height: 4px; background: #e2e8f0; border-radius: 2px; margin-top: 5px; overflow: hidden; display: none;">
+                  <div id="strengthBar" style="height: 100%; width: 0; transition: all 0.3s ease;"></div>
+              </div>
+              <span id="passwordError" class="error-message" style="display:none; color: var(--danger); font-size: 0.85rem; margin-top: 5px;">Password must have at least 8 characters, 1 uppercase, 1 lowercase, 1 number, and 1 special character.</span>
+            </div>
+
+            <!-- 5. Confirm Password -->
+            <div class="form-group">
+              <label for="confirmPassword">Confirm Password</label>
+              <input type="password" id="confirmPassword" name="confirmPassword" required placeholder="Confirm password" aria-describedby="confirmError" aria-invalid="false" />
+              <span id="confirmError" class="error-message" style="display:none; color: var(--danger); font-size: 0.85rem; margin-top: 5px;">Passwords do not match.</span>
+              <span id="confirmMatch" class="success-message" style="display:none; color: var(--success); font-size: 0.85rem; margin-top: 5px;">Passwords match.</span>
+            </div>
+
+            <!-- 6. Course -->
+            <div class="form-group">
+              <label for="course">Course</label>
+              <select id="course" name="course" required aria-describedby="courseError" aria-invalid="false" style="width: 100%; padding: 12px 14px; border: 1px solid var(--border-color); border-radius: 10px; outline: none; background: var(--card-bg); font-family: inherit;">
+                <option value="">Select Course</option>
+                <option value="BTech">B.Tech</option>
+                <option value="MTech">M.Tech</option>
+                <option value="BBA">BBA</option>
+                <option value="MBA">MBA</option>
+              </select>
+              <span id="courseError" class="error-message" style="display:none; color: var(--danger); font-size: 0.85rem; margin-top: 5px;">Please select a course.</span>
+            </div>
+
+            <!-- 7. Year -->
+            <div class="form-group">
+              <label for="year">Year</label>
+              <select id="year" name="year" required aria-describedby="yearError" aria-invalid="false" style="width: 100%; padding: 12px 14px; border: 1px solid var(--border-color); border-radius: 10px; outline: none; background: var(--card-bg); font-family: inherit;">
+                <option value="">Select Year</option>
+                <option value="1">1st Year</option>
+                <option value="2">2nd Year</option>
+                <option value="3">3rd Year</option>
+                <option value="4">4th Year</option>
+              </select>
+              <span id="yearError" class="error-message" style="display:none; color: var(--danger); font-size: 0.85rem; margin-top: 5px;">Please select a year.</span>
+            </div>
+
+            <!-- 8. Gender (Radio) -->
+            <div class="form-group" style="grid-column: 1 / -1">
+              <fieldset style="border: none; padding: 0; margin: 0;">
+                  <legend style="font-weight: 600; margin-bottom: 8px;">Gender</legend>
+                  <div style="display: flex; gap: 20px;">
+                      <label style="font-weight: normal; display: flex; align-items: center; gap: 5px;"><input type="radio" name="gender" value="Male" required aria-describedby="genderError" /> Male</label>
+                      <label style="font-weight: normal; display: flex; align-items: center; gap: 5px;"><input type="radio" name="gender" value="Female" required /> Female</label>
+                      <label style="font-weight: normal; display: flex; align-items: center; gap: 5px;"><input type="radio" name="gender" value="Other" required /> Other</label>
+                  </div>
+              </fieldset>
+              <span id="genderError" class="error-message" style="display:none; color: var(--danger); font-size: 0.85rem; margin-top: 5px;">Please select a gender.</span>
+            </div>
+
+            <!-- 9. Terms & Conditions -->
+            <div class="form-group" style="grid-column: 1 / -1; display: flex; flex-direction: column;">
+              <label style="font-weight: normal; display: flex; align-items: center; gap: 10px;">
+                <input type="checkbox" id="terms" name="terms" required aria-describedby="termsError" />
+                I agree to the Terms & Conditions.
+              </label>
+              <span id="termsError" class="error-message" style="display:none; color: var(--danger); font-size: 0.85rem; margin-top: 5px;">You must agree to the Terms & Conditions.</span>
+            </div>
+          </div>
+          
+          <div style="display: flex; gap: 15px; margin-top: 20px;">
+            <!-- 10. Register Button -->
+            <button type="submit" class="btn btn-primary" style="flex: 1;">Register Account</button>
+            <!-- 11. Reset Button -->
+            <button type="reset" class="btn btn-secondary" style="flex: 1;">Reset</button>
+          </div>
+        </form>
+        <p class="auth-footer">
+          Already have an account? <a href="login.html">Login here</a>
+        </p>
+      </div>
+    </div>
+
+    
+  
+    <script src="../js/api.js?v=1"></script>
+    <script src="../js/utils.js?v=1"></script>
+    <script src="../js/pagination.js?v=1"></script>
+    <script src="../js/students.js?v=1"></script>
+    <script src="../js/events.js?v=1"></script>
+    <script src="../js/faqs.js?v=1"></script>
+    <script src="../js/script.js?v=1790888521566"></script>
+
+  </body>
+</html>
+
+
