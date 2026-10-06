@@ -106,7 +106,7 @@
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px">
           <div class="card">
             <h3 style="margin-bottom: 20px">Get in Touch</h3>
-            <form>
+            <form action="../php/contact.php" method="POST">
               <div style="margin-bottom: 15px">
                 <label
                   style="display: block; margin-bottom: 5px; font-weight: 500"
@@ -114,6 +114,7 @@
                 >
                 <input
                   type="text"
+                  name="name"
                   style="
                     width: 100%;
                     padding: 10px;
@@ -122,6 +123,7 @@
                     outline: none;
                   "
                   placeholder="Enter your name"
+                  required
                 />
               </div>
               <div style="margin-bottom: 15px">
@@ -131,6 +133,7 @@
                 >
                 <input
                   type="email"
+                  name="email"
                   style="
                     width: 100%;
                     padding: 10px;
@@ -139,6 +142,7 @@
                     outline: none;
                   "
                   placeholder="Enter your email"
+                  required
                 />
               </div>
               <div style="margin-bottom: 15px">
@@ -148,6 +152,7 @@
                 >
                 <input
                   type="text"
+                  name="subject"
                   style="
                     width: 100%;
                     padding: 10px;
@@ -156,6 +161,7 @@
                     outline: none;
                   "
                   placeholder="Message subject"
+                  required
                 />
               </div>
               <div style="margin-bottom: 20px">
@@ -164,6 +170,7 @@
                   >Message</label
                 >
                 <textarea
+                  name="message"
                   rows="4"
                   style="
                     width: 100%;
@@ -174,9 +181,10 @@
                     font-family: inherit;
                   "
                   placeholder="Type your message here..."
+                  required
                 ></textarea>
               </div>
-              <button type="button" class="btn btn-primary btn-block">
+              <button type="submit" class="btn btn-primary btn-block">
                 Send Message
               </button>
             </form>

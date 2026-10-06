@@ -29,7 +29,7 @@
         <button id="close-sidebar"><i class="fas fa-times"></i></button>
       </div>
       <nav class="sidebar-nav">
-        <a href="dashboard.html" class="active"><i class="fas fa-home"></i> Dashboard</a>
+        <a href="dashboard.html"><i class="fas fa-home"></i> Dashboard</a>
         <a href="course.html"><i class="fas fa-book"></i> Courses</a>
         <a href="assignments.html"><i class="fas fa-tasks"></i> Assignments</a>
         <a href="attendance.html"
@@ -47,6 +47,8 @@
           ><i class="fas fa-comments"></i> Counselling</a
         >
         <a href="feedback.html"><i class="fas fa-comment-dots"></i> Feedback</a>
+        <a href="events.html"><i class="fas fa-calendar-alt"></i> Events</a>
+        <a href="faqs.html" class="active"><i class="fas fa-question-circle"></i> FAQs</a>
         <a href="contact.html"><i class="fas fa-envelope"></i> Contact</a>
         <a href="profile.html"><i class="fas fa-user"></i> Profile</a>
         <a href="login.html" class="logout-link"
@@ -56,7 +58,54 @@
     </aside>
 
     <main class="main-content">
-<header class="top-header" style="background: var(--card-bg); padding: 15px 30px; border-radius: 12px; margin-bottom: 30px; box-shadow: var(--shadow); display: flex; justify-content: space-between; align-items: center;"><h2>Frequently Asked Questions</h2></header>
+      <header class="top-header">
+        <div class="header-left">
+          <button
+            id="hamburger-btn"
+            class="hamburger-btn"
+            aria-label="Open navigation"
+            aria-expanded="false"
+          >
+            <i class="fas fa-bars"></i>
+          </button>
+          <h2 style="margin-left: 20px;">Frequently Asked Questions</h2>
+        </div>
+        <div class="header-right">
+          <button
+            id="theme-toggle"
+            class="theme-toggle-btn"
+            aria-label="Toggle theme"
+          >
+            <i class="fas fa-moon"></i>
+          </button>
+          <div class="notification-icon">
+            <i class="fas fa-bell"></i>
+            <span class="badge">3</span>
+          </div>
+          <div class="user-profile">
+            <img
+              src="https://ui-avatars.com/api/?name=Krutin+Koradiya&background=random"
+              alt="Profile"
+            />
+            <span>Krutin Koradiya</span>
+          </div>
+        </div>
+      </header>
+
+      <div id="notification-banner" class="notification-banner" role="alert">
+        <span
+          ><i class="fas fa-exclamation-circle"></i> Important: Mid-semester
+          examination schedule has been released.</span
+        >
+        <button
+          id="close-banner"
+          class="close-banner"
+          aria-label="Close notification"
+        >
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+      <div class="content-wrapper">
 
     <div class="card" style="padding: 20px;">
         <div style="display: flex; gap: 15px; margin-bottom: 20px; flex-wrap: wrap;">
@@ -75,15 +124,62 @@
         <div id="faqPagination"></div>
     </div>
 
+      </div>
+      <footer class="site-footer">
+        <div class="footer-container">
+          <div class="footer-section">
+            <h3>About Student Hub</h3>
+            <p>
+              Student Hub is a centralized student portal designed to provide
+              students with easy access to academic information and college
+              services.
+            </p>
+            <p>
+              Students can manage courses, assignments, attendance, results,
+              notices, fees, e-library and counselling from one platform.
+            </p>
+          </div>
+          <div class="footer-section">
+            <h3>Quick Links</h3>
+            <ul>
+              <li><a href="homepage.html">Home</a></li>
+              <li><a href="dashboard.html" class="active">Dashboard</a></li>
+              <li><a href="course.html">Courses</a></li>
+              <li><a href="assignments.html">Assignments</a></li>
+              <li><a href="attendance.html">Attendance</a></li>
+              <li><a href="results.html">Results</a></li>
+              <li><a href="e-library.html">E-Library</a></li>
+            </ul>
+          </div>
+          <div class="footer-section">
+            <h3>Student Services</h3>
+            <ul>
+              <li><a href="notice.html">Notices</a></li>
+              <li><a href="fee_receipt.html">Fee Receipt</a></li>
+              <li><a href="counselling.html">Counselling</a></li>
+              <li><a href="feedback.html">Feedback</a></li>
+              <li><a href="faculty.html">Faculty</a></li>
+              <li><a href="contact.html">Contact</a></li>
+            </ul>
+          </div>
+          <div class="footer-section">
+            <h3>Contact</h3>
+            <div class="footer-contact-info">
+              <p><i class="fas fa-map-marker-alt"></i> College Address</p>
+              <p><i class="fas fa-envelope"></i> Email</p>
+              <p><i class="fas fa-phone-alt"></i> Phone</p>
+              <p><i class="fas fa-clock"></i> Office Hours</p>
+            </div>
+          </div>
+        </div>
+        <div class="footer-bottom">
+          <p>&copy; 2026 Student Hub. All Rights Reserved.</p>
+        </div>
+      </footer>
 </main>
     
   
-    <script src="../js/api.js?v=1"></script>
-    <script src="../js/utils.js?v=1"></script>
-    <script src="../js/pagination.js?v=1"></script>
-    <script src="../js/students.js?v=1"></script>
-    <script src="../js/events.js?v=1"></script>
-    <script src="../js/faqs.js?v=1"></script>
+    <script type="module" src="../js/main.js"></script>
     <script src="../js/script.js?v=1790888521566"></script>
 
   </body>
