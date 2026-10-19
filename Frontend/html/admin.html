@@ -10,6 +10,60 @@
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
     />
+    <!-- Anti-Cache Meta Tags to prevent Browser Back Button caching -->
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Expires" content="0" />
+
+    <style>
+      body.dashboard-layout { display: none !important; }
+    </style>
+    <!-- Strict Admin Restriction Guard: Absolutely no admin details shown to students or after logout -->
+    <script>
+      (function() {
+        function verifyAdminAuth() {
+          let user = null;
+          try {
+            user = JSON.parse(localStorage.getItem("student_user") || sessionStorage.getItem("student_user") || "null");
+          } catch(e) {}
+
+          // Strict Authorization: Deny access if not logged in
+          if (!user || !user.id) {
+            try {
+              localStorage.removeItem("student_user");
+              sessionStorage.removeItem("student_user");
+            } catch(e) {}
+            window.location.replace("login.html?error=access_denied&role=admin");
+            return false;
+          }
+
+          if (user.role !== 'Admin') {
+            // Block student and redirect immediately to Student Dashboard
+            window.location.replace("dashboard.html?error=admin_required");
+            return false;
+          }
+
+          // Only verified Admin accounts are permitted to see the Admin interface
+          if (document.body) {
+            document.body.style.setProperty("display", "block", "important");
+          } else {
+            window.addEventListener("DOMContentLoaded", () => {
+              document.body.style.setProperty("display", "block", "important");
+            });
+          }
+          return true;
+        }
+
+        verifyAdminAuth();
+
+        window.addEventListener("pageshow", function(event) {
+          verifyAdminAuth();
+        });
+        window.addEventListener("popstate", function() {
+          verifyAdminAuth();
+        });
+      })();
+    </script>
   </head>
   <body class="dashboard-layout">
     <aside class="sidebar" id="sidebar">
@@ -29,7 +83,9 @@
         <button id="close-sidebar"><i class="fas fa-times"></i></button>
       </div>
       <nav class="sidebar-nav">
-        <a href="dashboard.html"><i class="fas fa-home"></i> Dashboard</a>
+        <a href="admin.html" class="active"><i class="fas fa-user-shield"></i> Admin Panel</a>
+        <a href="dashboard.html"><i class="fas fa-home"></i> Student Dashboard</a>
+        <a href="registration.html"><i class="fas fa-user-plus"></i> Student Registration</a>
         <a href="course.html"><i class="fas fa-book"></i> Courses</a>
         <a href="assignments.html"><i class="fas fa-tasks"></i> Assignments</a>
         <a href="attendance.html"
@@ -71,6 +127,22 @@
         </div>
         <div class="header-right">
           <button
+            id="admin-test-access-denied-btn"
+            class="timeout-test-btn"
+            title="Demonstrate Access Denied After Logout (Lab / Screenshot Demo)"
+            style="background: rgba(220, 38, 38, 0.1); color: #dc2626; border: 1.5px solid rgba(220, 38, 38, 0.4); border-radius: 20px; padding: 6px 12px; font-size: 0.8rem; font-weight: 600; cursor: pointer; margin-right: 8px; display: inline-flex; align-items: center; gap: 6px;"
+          >
+            <i class="fas fa-shield-alt"></i> Test Access Denied
+          </button>
+          <button
+            id="admin-simulate-timeout-btn"
+            class="timeout-test-btn"
+            title="Simulate Inactivity Timeout (Demonstrates Session Expiry)"
+            style="background: rgba(245, 158, 11, 0.1); color: #d97706; border: 1.5px solid rgba(245, 158, 11, 0.4); border-radius: 20px; padding: 6px 12px; font-size: 0.8rem; font-weight: 600; cursor: pointer; margin-right: 12px; display: inline-flex; align-items: center; gap: 6px;"
+          >
+            <i class="fas fa-hourglass-end"></i> Test Timeout
+          </button>
+          <button
             id="theme-toggle"
             class="theme-toggle-btn"
             aria-label="Toggle theme"
@@ -92,6 +164,9 @@
       </header>
 
       <div class="content-wrapper">
+        <!-- Live Restriction Status Banner -->
+        <div id="adminRestrictionBanner" style="display: none; align-items: center; gap: 12px; padding: 14px 20px; border-radius: 8px; color: white; margin-bottom: 25px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); font-size: 0.95rem;"></div>
+
         <div
           style="
             display: flex;
@@ -202,6 +277,40 @@
             </ul>
           </div>
         </div>
+
+        <!-- Live MySQL Registered Users Table -->
+        <div class="card" style="margin-top: 30px;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 10px;">
+            <div>
+              <h3 style="font-size: 1.3rem; color: var(--primary);">
+                <i class="fas fa-database"></i> Live Database: Registered Users (<code style="background: rgba(37,99,235,0.1); padding: 2px 6px; border-radius: 4px;">studenthub.users</code>)
+              </h3>
+              <p style="color: var(--text-muted); font-size: 0.9rem; margin-top: 4px;">Real-time user accounts stored in your MySQL database</p>
+            </div>
+            <button id="refreshDbBtn" class="btn btn-outline" style="font-size: 0.85rem;">
+              <i class="fas fa-sync-alt"></i> Refresh Data
+            </button>
+          </div>
+          <div style="overflow-x: auto;">
+            <table class="data-table" style="width: 100%; border-collapse: collapse; text-align: left; font-size: 0.95rem;">
+              <thead>
+                <tr style="border-bottom: 2px solid #e2e8f0; background: rgba(37,99,235,0.06);">
+                  <th style="padding: 12px 14px;">ID</th>
+                  <th style="padding: 12px 14px;">Full Name</th>
+                  <th style="padding: 12px 14px;">Email</th>
+                  <th style="padding: 12px 14px;">Mobile</th>
+                  <th style="padding: 12px 14px;">Course</th>
+                  <th style="padding: 12px 14px;">Year</th>
+                  <th style="padding: 12px 14px;">Role</th>
+                  <th style="padding: 12px 14px;">Registration Date</th>
+                </tr>
+              </thead>
+              <tbody id="dbUsersBody">
+                <tr><td colspan="8" style="padding: 20px; text-align: center; color: var(--text-muted);">Loading live database records...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
       </div>
 
       <footer class="site-footer">
@@ -270,5 +379,36 @@
     <script src="../js/faqs.js?v=1"></script>
     <script src="../js/script.js?v=1790888521566"></script>
 
+    <script>
+      (function() {
+        const testAccessDenied = document.getElementById("admin-test-access-denied-btn");
+        if (testAccessDenied) {
+          testAccessDenied.addEventListener("click", () => {
+            try {
+              localStorage.removeItem("student_user");
+              sessionStorage.removeItem("student_user");
+              if (typeof getAuthApiUrl === 'function') {
+                fetch(getAuthApiUrl() + "?action=logout");
+              }
+            } catch(e) {}
+            window.location.replace("login.html?error=access_denied&role=admin");
+          });
+        }
+
+        const testTimeout = document.getElementById("admin-simulate-timeout-btn");
+        if (testTimeout) {
+          testTimeout.addEventListener("click", () => {
+            try {
+              localStorage.removeItem("student_user");
+              sessionStorage.removeItem("student_user");
+              if (typeof getAuthApiUrl === 'function') {
+                fetch(getAuthApiUrl() + "?action=logout");
+              }
+            } catch(e) {}
+            window.location.replace("login.html?error=session_timeout&role=admin");
+          });
+        }
+      })();
+    </script>
   </body>
 </html>

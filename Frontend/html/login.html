@@ -3,9 +3,9 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Student Hub Portal - Login</title>
-    <link rel="stylesheet" href="../css/style.css?v=1790904735.40533" />
-    <link rel="stylesheet" href="../css/login.css?v=1790895069.40284" />
+    <title>Sign In - Student Hub Portal</title>
+    <link rel="stylesheet" href="../css/style.css?v=2" />
+    <link rel="stylesheet" href="../css/login.css?v=2" />
     <link
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
@@ -14,49 +14,142 @@
   <body class="auth-layout">
     <div class="auth-container">
       <div class="auth-card">
-        <div class="auth-header">
-          <h2>Student Login</h2>
-          <p>Welcome back! Please login to your account.</p>
+        
+        <!-- Role Selection Tabs -->
+        <div class="role-tabs" role="tablist">
+          <button type="button" id="tabStudent" class="role-tab active-student" role="tab" aria-selected="true">
+            <i class="fas fa-user-graduate"></i> Student Login
+          </button>
+          <button type="button" id="tabAdmin" class="role-tab" role="tab" aria-selected="false">
+            <i class="fas fa-user-shield"></i> Administrator
+          </button>
         </div>
-        <form action="dashboard.html">
+
+        <div class="auth-header">
+          <span id="rolePill" class="role-pill pill-student">Student Access</span>
+          <h2 id="loginTitle"><i class="fas fa-graduation-cap" style="color: #0284c7;"></i> Student Portal</h2>
+          <p id="loginSubtitle">Enter your student credentials to access academic services and dashboard</p>
+        </div>
+
+        <!-- Feedback Alert Container -->
+        <div id="loginAlert" style="display: none; padding: 12px 16px; border-radius: 8px; margin-bottom: 20px; font-size: 0.95rem; text-align: center; font-weight: 500;"></div>
+
+        <form id="loginForm" novalidate>
+          <input type="hidden" id="loginRole" name="role" value="Student" />
+
           <div class="form-group">
-            <label>Email or Student ID</label>
-            <input type="text" required placeholder="Enter ID or Email" />
+            <label for="loginEmail" id="emailLabel">Student Email or Mobile Number</label>
+            <input 
+              type="text" 
+              id="loginEmail" 
+              name="identifier" 
+              required 
+              placeholder="student@example.com or mobile" 
+              autocomplete="username" 
+            />
           </div>
+
           <div class="form-group">
-            <label>Password</label>
+            <label for="password">Password</label>
             <div class="password-input">
               <input
                 type="password"
                 id="password"
+                name="password"
                 required
-                placeholder="Enter password"
+                placeholder="Enter your password"
+                autocomplete="current-password"
               />
-              <i class="fas fa-eye" id="toggle-password"></i>
+              <i class="fas fa-eye" id="toggle-password" style="cursor: pointer;"></i>
             </div>
           </div>
+
           <div class="form-options">
-            <label><input type="checkbox" /> Remember me</label>
+            <label><input type="checkbox" id="rememberMe" /> Remember me</label>
             <a href="#">Forgot Password?</a>
           </div>
-          <button type="submit" class="btn btn-primary btn-block">Login</button>
+
+          <button type="submit" id="loginBtn" class="btn btn-primary btn-block btn-student">
+            Sign In as Student
+          </button>
         </form>
-        <p class="auth-footer">
-          Don't have an account? <a href="registration.html">Register</a>
+
+        <p class="auth-footer" id="registerFooter">
+          Don't have an account? <a href="registration.html">Register as Student</a>
         </p>
+
+        <p class="auth-footer" id="adminCredentialsHint" style="display: none; font-size: 0.85rem; color: #6366f1; background: rgba(99, 102, 241, 0.08); padding: 8px 12px; border-radius: 8px; border: 1px dashed rgba(99, 102, 241, 0.3); margin-top: 15px; text-align: center;">
+          <i class="fas fa-key"></i> <strong>Admin Access:</strong> <code>admin@example.com</code> &bull; Pass: <code>Admin@123</code>
+        </p>
+
+
       </div>
     </div>
 
-    
-  
     <script src="../js/api.js?v=1"></script>
     <script src="../js/utils.js?v=1"></script>
     <script src="../js/pagination.js?v=1"></script>
     <script src="../js/students.js?v=1"></script>
     <script src="../js/events.js?v=1"></script>
     <script src="../js/faqs.js?v=1"></script>
-    <script src="../js/script.js?v=1790888521566"></script>
+    <script src="../js/script.js?v=2"></script>
 
+    <script>
+      // Role Switcher Logic
+      const tabStudent = document.getElementById("tabStudent");
+      const tabAdmin = document.getElementById("tabAdmin");
+      const loginRole = document.getElementById("loginRole");
+      const loginTitle = document.getElementById("loginTitle");
+      const loginSubtitle = document.getElementById("loginSubtitle");
+      const emailLabel = document.getElementById("emailLabel");
+      const emailInput = document.getElementById("loginEmail");
+      const loginBtn = document.getElementById("loginBtn");
+      const rolePill = document.getElementById("rolePill");
+      const registerFooter = document.getElementById("registerFooter");
+      const adminCredentialsHint = document.getElementById("adminCredentialsHint");
+
+      function setRole(role) {
+        if (role === 'admin') {
+          tabAdmin.classList.add("active-admin");
+          tabStudent.classList.remove("active-student");
+          loginRole.value = "Admin";
+          rolePill.className = "role-pill pill-admin";
+          rolePill.textContent = "Admin Portal";
+          loginTitle.innerHTML = '<i class="fas fa-user-shield" style="color: #4f46e5;"></i> Administrator Portal';
+          loginSubtitle.textContent = "Restricted management console for authorized faculty and administrators";
+          emailLabel.textContent = "Administrator Email";
+          emailInput.placeholder = "admin@example.com";
+          loginBtn.className = "btn btn-primary btn-block btn-admin";
+          loginBtn.innerHTML = "Sign In as Administrator";
+          registerFooter.style.display = "none";
+          if (adminCredentialsHint) adminCredentialsHint.style.display = "block";
+        } else {
+          tabStudent.classList.add("active-student");
+          tabAdmin.classList.remove("active-admin");
+          loginRole.value = "Student";
+          rolePill.className = "role-pill pill-student";
+          rolePill.textContent = "Student Access";
+          loginTitle.innerHTML = '<i class="fas fa-graduation-cap" style="color: #0284c7;"></i> Student Portal';
+          loginSubtitle.textContent = "Enter your student credentials to access academic services and dashboard";
+          emailLabel.textContent = "Student Email or Mobile Number";
+          emailInput.placeholder = "student@example.com or mobile";
+          loginBtn.className = "btn btn-primary btn-block btn-student";
+          loginBtn.innerHTML = "Sign In as Student";
+          registerFooter.style.display = "block";
+          if (adminCredentialsHint) adminCredentialsHint.style.display = "none";
+        }
+      }
+
+      tabStudent.addEventListener("click", () => setRole("student"));
+      tabAdmin.addEventListener("click", () => setRole("admin"));
+
+      // Check URL parameters (e.g. login.html?role=admin)
+      const params = new URLSearchParams(window.location.search);
+      if (params.get("role") === "admin" || params.get("error") === "admin_required") {
+        setRole("admin");
+      }
+
+
+    </script>
   </body>
 </html>
-

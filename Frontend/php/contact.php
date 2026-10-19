@@ -7,6 +7,7 @@ $name = $email = $phone = $subject = $message = '';
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $name = trim($_POST["name"] ?? "");
     $email = trim($_POST["email"] ?? "");
+    $phone = trim($_POST["phone"] ?? "");
     $subject = trim($_POST["subject"] ?? "");
     $message = trim($_POST["message"] ?? "");
 
@@ -20,6 +21,12 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         $errors[] = "Email address is required.";
     } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
         $errors[] = "Please enter a valid email address.";
+    }
+
+    if (empty($phone)) {
+        $errors[] = "Phone number is required.";
+    } elseif (!preg_match('/^[0-9]{10}$/', $phone)) {
+        $errors[] = "Phone number must contain 10 digits.";
     }
 
     if (empty($subject)) {
@@ -37,6 +44,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     if (empty($errors)) {
         $safeName = htmlspecialchars($name, ENT_QUOTES, 'UTF-8');
         $safeEmail = htmlspecialchars($email, ENT_QUOTES, 'UTF-8');
+        $safePhone = htmlspecialchars($phone, ENT_QUOTES, 'UTF-8');
         $safeSubject = htmlspecialchars($subject, ENT_QUOTES, 'UTF-8');
         $safeMessage = htmlspecialchars($message, ENT_QUOTES, 'UTF-8');
 
@@ -59,6 +67,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             'id' => uniqid(),
             'name' => $safeName,
             'email' => $safeEmail,
+            'phone' => $safePhone,
             'subject' => $safeSubject,
             'message' => $safeMessage,
             'submitted_at' => date('Y-m-d H:i:s')
@@ -69,7 +78,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         
         $success = true;
         // Clear fields on success
-        $name = $email = $subject = $message = '';
+        $name = $email = $phone = $subject = $message = '';
     }
 }
 ?>
@@ -237,7 +246,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
               <div style="margin-bottom: 15px">
                 <label
                   style="display: block; margin-bottom: 5px; font-weight: 500"
-                  >Your Name</label
+                  >Full Name</label
                 >
                 <input
                   type="text"
@@ -259,7 +268,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                   >Email Address</label
                 >
                 <input
-                  type="email"
+                  type="text"
                   name="email"
                   value="<?php echo htmlspecialchars($email, ENT_QUOTES, 'UTF-8'); ?>"
                   style="
@@ -270,6 +279,25 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                     outline: none;
                   "
                   placeholder="Enter your email"
+                />
+              </div>
+              <div style="margin-bottom: 15px">
+                <label
+                  style="display: block; margin-bottom: 5px; font-weight: 500"
+                  >Phone Number</label
+                >
+                <input
+                  type="text"
+                  name="phone"
+                  value="<?php echo htmlspecialchars($phone, ENT_QUOTES, 'UTF-8'); ?>"
+                  style="
+                    width: 100%;
+                    padding: 10px;
+                    border: 1px solid var(--border-color);
+                    border-radius: 8px;
+                    outline: none;
+                  "
+                  placeholder="10-digit Indian phone number"
                 />
               </div>
               <div style="margin-bottom: 15px">
@@ -310,9 +338,14 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                   placeholder="Type your message here..."
                 ><?php echo htmlspecialchars($message, ENT_QUOTES, 'UTF-8'); ?></textarea>
               </div>
-              <button type="submit" class="btn btn-primary btn-block">
-                Send Message
-              </button>
+              <div class="button-group">
+                  <button type="submit" class="btn btn-primary btn-block" style="flex: 1;">
+                    Submit
+                  </button>
+                  <button type="reset" class="btn btn-secondary btn-block" style="flex: 1; padding: 10px 15px; border-radius: 8px; cursor: pointer;">
+                    Reset
+                  </button>
+              </div>
             </form>
           </div>
           <div>

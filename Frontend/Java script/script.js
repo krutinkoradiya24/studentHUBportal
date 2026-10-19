@@ -1,4 +1,44 @@
+function initPageAuthGuard() {
+  const currentPath = window.location.pathname.toLowerCase();
+  const protectedPages = [
+    'dashboard.html',
+    'admin.html',
+    'profile.html',
+    'attendance.html',
+    'course.html',
+    'assignments.html',
+    'results.html',
+    'fee_receipt.html',
+    'counselling.html',
+    'e-library.html'
+  ];
+
+  const isProtected = protectedPages.some(page => currentPath.endsWith(page));
+  if (!isProtected) return;
+
+  let user = null;
+  try {
+    user = JSON.parse(localStorage.getItem("student_user") || sessionStorage.getItem("student_user") || "null");
+  } catch(e) {}
+
+  if (!user || !user.id || !user.full_name) {
+    try {
+      localStorage.removeItem("student_user");
+      sessionStorage.removeItem("student_user");
+    } catch(e) {}
+    window.location.replace("login.html?error=access_denied");
+  }
+}
+
+// Check immediately on script execution
+initPageAuthGuard();
+
+// Re-check on browser Back / Forward cache navigation (bfcache)
+window.addEventListener("pageshow", initPageAuthGuard);
+window.addEventListener("popstate", initPageAuthGuard);
+
 document.addEventListener("DOMContentLoaded", () => {
+  initPageAuthGuard();
   initTheme();
   initNotification();
   initMobileMenu();
@@ -6,6 +46,10 @@ document.addEventListener("DOMContentLoaded", () => {
   initModal();
   initSlider();
   initAccessibility();
+  initLoginForm();
+  initUserProfile();
+  initLogout();
+  initDbTable();
 });
 
 /* ==================================================
@@ -504,19 +548,82 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
         if (isValid) {
-            successMsg.style.display = "block";
-            // Pop up an alert as well to ensure they see it
-            alert("Registration successful!");
-            // Redirect to login page after a short delay
-            setTimeout(() => {
-                window.location.href = "login.html";
-            }, 1500);
+            const errorMsgEl = document.getElementById("errorMessage");
+            const regBtn = document.getElementById("registerBtn") || regForm.querySelector("button[type='submit']");
+            const originalBtnText = regBtn ? regBtn.innerHTML : "Register Account";
+
+            if (regBtn) {
+                regBtn.disabled = true;
+                regBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving to Database...';
+            }
+            if (errorMsgEl) errorMsgEl.style.display = "none";
+            successMsg.style.display = "none";
+
+            let selectedGender = "Other";
+            for (const radio of genderRadios) {
+                if (radio.checked) selectedGender = radio.value;
+            }
+
+            const payload = {
+                action: "register",
+                fullName: nameInput.value.trim(),
+                email: emailInput.value.trim(),
+                mobile: mobileInput.value.trim(),
+                password: passInput.value,
+                course: courseSelect.value,
+                year: yearSelect.value,
+                gender: selectedGender
+            };
+
+            fetch(getAuthApiUrl(), {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(payload)
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (regBtn) {
+                    regBtn.disabled = false;
+                    regBtn.innerHTML = originalBtnText;
+                }
+
+                if (data.success) {
+                    successMsg.innerHTML = '<i class="fas fa-check-circle"></i> ' + (data.message || "Registration completed successfully! Redirecting to login...");
+                    successMsg.style.display = "block";
+                    sessionStorage.setItem("registered_email", payload.email);
+                    setTimeout(() => {
+                        window.location.href = "login.html?registered=1";
+                    }, 1200);
+                } else {
+                    if (errorMsgEl) {
+                        errorMsgEl.innerHTML = '<i class="fas fa-exclamation-triangle"></i> ' + (data.message || "Registration failed.");
+                        errorMsgEl.style.display = "block";
+                    } else {
+                        alert(data.message || "Registration failed.");
+                    }
+                }
+            })
+            .catch(err => {
+                console.error("Registration error:", err);
+                if (regBtn) {
+                    regBtn.disabled = false;
+                    regBtn.innerHTML = originalBtnText;
+                }
+                if (errorMsgEl) {
+                    errorMsgEl.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Cannot connect to database server. Please ensure XAMPP Apache & MySQL are running.';
+                    errorMsgEl.style.display = "block";
+                } else {
+                    alert("Cannot connect to server. Please ensure XAMPP MySQL and Apache are running.");
+                }
+            });
         }
     });
 
     // Reset Form
     regForm.addEventListener("reset", () => {
         successMsg.style.display = "none";
+        const errorMsgEl = document.getElementById("errorMessage");
+        if (errorMsgEl) errorMsgEl.style.display = "none";
         document.querySelectorAll(".error-message").forEach(el => el.style.display = "none");
         confirmMatch.style.display = "none";
         strengthBarContainer.style.display = "none";
@@ -529,41 +636,444 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 });
 
-document.addEventListener("DOMContentLoaded", () => {
-    if (typeof initStudents === 'function') initStudents();
-    if (typeof initEvents === 'function') initEvents();
-    if (typeof initFAQsData === 'function') initFAQsData();
-    if (typeof initDashboardEvents === 'function') initDashboardEvents();
-    if (typeof initAdminStats === 'function') initAdminStats();
-});
-
-// Admin stats
-async function initAdminStats() {
-    const adminStats = document.getElementById('dynamicAdminStats');
-    if (!adminStats) return;
-    const data = await fetchStudents();
-    if(data && data.length > 0) {
-        const total = data.length;
-        const avgCgpa = (data.reduce((sum, s) => sum + s.cgpa, 0) / total).toFixed(2);
-        const avgAtt = (data.reduce((sum, s) => sum + s.attendance, 0) / total).toFixed(1);
-        adminStats.innerHTML = `<div class="card"><h3>Total Students</h3><p style="font-size: 2rem; color: var(--primary);">${total}</p></div>
-        <div class="card"><h3>Average CGPA</h3><p style="font-size: 2rem; color: var(--primary);">${avgCgpa}</p></div>
-        <div class="card"><h3>Average Attendance</h3><p style="font-size: 2rem; color: var(--primary);">${avgAtt}%</p></div>`;
+/* ==================================================
+   API URL RESOLVER (Works with Apache & Live-Server)
+================================================== */
+function getAuthApiUrl() {
+    // If opened via Apache: e.g. http://localhost/STUDENTPORTAL/Frontend/...
+    if (window.location.pathname.includes('/STUDENTPORTAL/')) {
+        return '../php/auth.php';
     }
+    // If opened via live-server: e.g. http://127.0.0.1:8080/html/...
+    return 'http://localhost/STUDENTPORTAL/Frontend/php/auth.php';
 }
 
-// Dashboard Events
-async function initDashboardEvents() {
-    const dashEvents = document.getElementById('dashboardUpcomingEvents');
-    if (!dashEvents) return;
-    const data = await fetchEvents();
-    if (data && data.length > 0) {
-        const upcoming = data.filter(e => e.status === 'Upcoming').sort((a, b) => new Date(a.date) - new Date(b.date)).slice(0, 3);
-        let html = '<div style="display: flex; flex-direction: column; gap: 10px;">';
-        upcoming.forEach(e => {
-            html += `<div class="card" style="padding: 15px;"><strong>${escapeHTML(e.title)}</strong> - ${escapeHTML(e.date)}</div>`;
+/* ==================================================
+   STUDENT LOGIN HANDLER
+================================================== */
+function initLoginForm() {
+    const loginForm = document.getElementById("loginForm");
+    if (!loginForm) return;
+
+    const emailInput = document.getElementById("loginEmail");
+    const passwordInput = document.getElementById("password");
+    const loginAlert = document.getElementById("loginAlert");
+    const loginBtn = document.getElementById("loginBtn") || loginForm.querySelector("button[type='submit']");
+
+    // Pre-fill email if redirected from registration
+    const prefillEmail = sessionStorage.getItem("registered_email");
+    if (prefillEmail && emailInput && !emailInput.value) {
+        emailInput.value = prefillEmail;
+    }
+
+    // Show registration or logout success banner if query param present
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get("registered") === "1" && loginAlert) {
+        loginAlert.style.display = "block";
+        loginAlert.style.background = "#10b981";
+        loginAlert.style.color = "#ffffff";
+        loginAlert.innerHTML = '<i class="fas fa-check-circle"></i> Registration successful! You can now log in with your credentials.';
+    } else if ((urlParams.get("message") === "logged_out" || urlParams.get("logged_out") === "1") && loginAlert) {
+        loginAlert.style.display = "block";
+        loginAlert.style.background = "#10b981";
+        loginAlert.style.color = "#ffffff";
+        loginAlert.innerHTML = '<i class="fas fa-check-circle"></i> You have been safely logged out.';
+    } else if ((urlParams.get("error") === "access_denied" || urlParams.get("error") === "admin_required") && loginAlert) {
+        loginAlert.style.display = "block";
+        loginAlert.style.background = "#fee2e2";
+        loginAlert.style.color = "#991b1b";
+        loginAlert.style.border = "1.5px solid #ef4444";
+        loginAlert.style.boxShadow = "0 4px 14px rgba(239, 68, 68, 0.25)";
+        loginAlert.style.borderRadius = "8px";
+        loginAlert.style.padding = "12px 16px";
+        loginAlert.innerHTML = '<i class="fas fa-shield-alt" style="font-size: 1.15rem; color: #dc2626; margin-right: 8px;"></i> <strong>ACCESS DENIED (403):</strong> Dashboard access denied after logout. Please log in first.';
+    } else if (urlParams.get("error") === "session_timeout" && loginAlert) {
+        loginAlert.style.display = "block";
+        loginAlert.style.background = "#fef3c7";
+        loginAlert.style.color = "#92400e";
+        loginAlert.style.border = "1.5px solid #f59e0b";
+        loginAlert.style.boxShadow = "0 4px 14px rgba(245, 158, 11, 0.25)";
+        loginAlert.style.borderRadius = "8px";
+        loginAlert.style.padding = "12px 16px";
+        loginAlert.innerHTML = '<i class="fas fa-hourglass-end" style="font-size: 1.15rem; color: #d97706; margin-right: 8px;"></i> <strong>SESSION TIMEOUT:</strong> Session expired due to inactivity. Redirection to login.';
+    }
+
+    loginForm.addEventListener("submit", (e) => {
+        e.preventDefault();
+        const identifier = emailInput ? emailInput.value.trim() : "";
+        const password = passwordInput ? passwordInput.value : "";
+
+        if (!identifier || !password) {
+            showLoginAlert("Please enter both your email/mobile and password.", "error");
+            return;
+        }
+
+        const originalBtnText = loginBtn ? loginBtn.innerHTML : "Login to Account";
+        if (loginBtn) {
+            loginBtn.disabled = true;
+            loginBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Checking Database...';
+        }
+
+        const portalRole = (document.getElementById("loginRole") ? document.getElementById("loginRole").value : "Student");
+
+        fetch(getAuthApiUrl(), {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                action: "login",
+                identifier: identifier,
+                password: password,
+                portal_role: portalRole
+            })
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (loginBtn) {
+                loginBtn.disabled = false;
+                loginBtn.innerHTML = originalBtnText;
+            }
+
+            if (data.success) {
+                // If attempting to log into Admin portal as a Student, reject!
+                if (portalRole === 'Admin' && data.user.role !== 'Admin') {
+                    showLoginAlert('<i class="fas fa-user-lock"></i> Access Denied: This account does not have Administrator privileges. Please use the Student Login option.', "error");
+                    return;
+                }
+
+                // If attempting to log into Student portal as an Admin, reject!
+                if (portalRole === 'Student' && data.user.role === 'Admin') {
+                    showLoginAlert('<i class="fas fa-user-shield"></i> Access Denied: This is an Administrator account. Please select the Administrator tab to sign in.', "error");
+                    return;
+                }
+
+                showLoginAlert('<i class="fas fa-check-circle"></i> ' + (data.message || "Login successful! Redirecting..."), "success");
+                // Save authenticated user
+                localStorage.setItem("student_user", JSON.stringify(data.user));
+                sessionStorage.setItem("student_user", JSON.stringify(data.user));
+                setTimeout(() => {
+                    if (data.user && data.user.role === 'Admin') {
+                        window.location.href = "admin.html";
+                    } else {
+                        window.location.href = "dashboard.html";
+                    }
+                }, 1000);
+            } else {
+                showLoginAlert('<i class="fas fa-exclamation-circle"></i> ' + (data.message || "Invalid credentials."), "error");
+            }
+        })
+        .catch(err => {
+            console.error("Login error:", err);
+            if (loginBtn) {
+                loginBtn.disabled = false;
+                loginBtn.innerHTML = originalBtnText;
+            }
+            showLoginAlert('<i class="fas fa-exclamation-triangle"></i> Cannot connect to database server. Please ensure XAMPP Apache & MySQL are running.', "error");
         });
-        html += '</div>';
-        dashEvents.innerHTML = html;
+    });
+
+    function showLoginAlert(msg, type) {
+        if (!loginAlert) {
+            alert(msg);
+            return;
+        }
+        loginAlert.style.display = "block";
+        loginAlert.innerHTML = msg;
+        if (type === "success") {
+            loginAlert.style.background = "#10b981";
+            loginAlert.style.color = "#ffffff";
+        } else {
+            loginAlert.style.background = "#ef4444";
+            loginAlert.style.color = "#ffffff";
+        }
     }
 }
+
+/* ==================================================
+   USER PROFILE SYNC (Dashboard & Profile pages)
+================================================== */
+function initUserProfile() {
+    const rawUser = localStorage.getItem("student_user") || sessionStorage.getItem("student_user");
+    if (!rawUser) return;
+
+    try {
+        const user = JSON.parse(rawUser);
+        if (!user || !user.full_name) return;
+
+        // Properly capitalize student full name
+        const cleanName = user.full_name.trim();
+        const formattedName = cleanName.replace(/\b\w/g, c => c.toUpperCase());
+
+        // Update header user-profile
+        document.querySelectorAll(".user-profile span").forEach(el => {
+            el.textContent = formattedName;
+        });
+
+        // Update avatar image with exact matching name
+        document.querySelectorAll(".user-profile img, .card img[alt='Profile']").forEach(img => {
+            img.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(formattedName)}&background=2563eb&color=fff&size=120`;
+        });
+
+        // Update dashboard welcome header
+        const welcomeH1 = document.querySelector(".dashboard-header h1");
+        if (welcomeH1) {
+            const firstName = formattedName.split(" ")[0];
+            welcomeH1.textContent = `Welcome Back, ${firstName} 👋`;
+        }
+
+        // Update student info text in dashboard
+        const welcomeP = document.querySelector(".dashboard-header p");
+        if (welcomeP) {
+            const course = user.course || "B.Tech";
+            const year = user.year ? `Year ${user.year}` : "Semester 1";
+            welcomeP.textContent = `Student ID: STD20260${user.id || '1'} | ${course} | ${year}`;
+        }
+
+        // Update Profile Page Heading (Matching Avatar Initials)
+        const profileHeading = document.getElementById("profileName") || document.querySelector(".card div h1") || document.querySelector(".content-wrapper .card h1");
+        if (profileHeading) {
+            profileHeading.textContent = formattedName;
+        }
+
+        // Update Profile Page Course
+        const profileCourse = document.getElementById("profileCourse") || document.querySelector(".card div > p[style*='font-size: 1.1rem']");
+        if (profileCourse) {
+            const cName = user.course || "B.Tech Computer Science Engineering";
+            profileCourse.textContent = cName.includes("Engineering") ? cName : `${cName} Engineering`;
+        }
+
+        // Update Profile Page ID and Contact details
+        const profileIdEl = document.getElementById("profileStudentId");
+        if (profileIdEl) profileIdEl.textContent = `STD20260${user.id || '1'}`;
+
+        const profileEmailEl = document.getElementById("profileEmail");
+        if (profileEmailEl && user.email) profileEmailEl.textContent = user.email;
+
+        const profilePhoneEl = document.getElementById("profilePhone");
+        if (profilePhoneEl && user.mobile) profilePhoneEl.textContent = user.mobile;
+
+        const profileSemesterEl = document.getElementById("profileSemester");
+        if (profileSemesterEl && user.year) profileSemesterEl.textContent = `Year ${user.year}`;
+
+        // Fallback for general cards
+        document.querySelectorAll(".card div").forEach(div => {
+            const label = div.querySelector("p");
+            const val = div.querySelectorAll("p")[1];
+            if (label && val) {
+                if (label.textContent.includes("Email Address") && user.email) {
+                    val.textContent = user.email;
+                } else if (label.textContent.includes("Phone Number") && user.mobile) {
+                    val.textContent = user.mobile;
+                } else if (label.textContent.includes("Student ID") && user.id) {
+                    val.textContent = `STD20260${user.id}`;
+                }
+            }
+        });
+
+        // Ensure NO admin details or admin links are shown for students
+        if (user.role !== 'Admin') {
+            document.querySelectorAll("a[href*='admin.html'], a[href*='admin_dashboard.php']").forEach(el => el.remove());
+        }
+
+        // Display access restricted notice if redirected from restricted admin page
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.get("error") === "admin_required") {
+            const notifBanner = document.getElementById("notification-banner");
+            if (notifBanner) {
+                notifBanner.style.display = "block";
+                notifBanner.style.background = "#fee2e2";
+                notifBanner.style.borderLeft = "4px solid #ef4444";
+                notifBanner.style.color = "#991b1b";
+                notifBanner.innerHTML = '<span><i class="fas fa-shield-alt" style="color: #ef4444; margin-right: 8px;"></i> <strong>Access Restricted:</strong> Administrator details and control panels are not accessible to Student accounts.</span>';
+            }
+        }
+    } catch (e) {
+        console.error("Error parsing student user profile:", e);
+    }
+}
+
+/* ==================================================
+   LOGOUT CONFIRMATION MODAL POPUP
+================================================== */
+let pendingLogoutAction = null;
+
+function getOrCreateLogoutModal() {
+    let modalOverlay = document.getElementById("logoutModalOverlay");
+    if (!modalOverlay) {
+        modalOverlay = document.createElement("div");
+        modalOverlay.id = "logoutModalOverlay";
+        modalOverlay.className = "logout-modal-overlay";
+        modalOverlay.setAttribute("aria-hidden", "true");
+        modalOverlay.setAttribute("role", "dialog");
+        modalOverlay.setAttribute("aria-modal", "true");
+        modalOverlay.setAttribute("aria-labelledby", "logoutModalTitle");
+
+        modalOverlay.innerHTML = `
+            <div class="logout-modal-card">
+                <button type="button" class="logout-modal-close" id="logoutModalCloseBtn" aria-label="Close dialog">
+                    <i class="fas fa-times"></i>
+                </button>
+                <div class="logout-modal-icon-wrap">
+                    <div class="logout-modal-icon-pulse"></div>
+                    <i class="fas fa-sign-out-alt"></i>
+                </div>
+                <h3 id="logoutModalTitle" class="logout-modal-title">Confirm Sign Out</h3>
+                <p class="logout-modal-desc">
+                    Are you sure you want to log out of your session? You will need to sign in again to access the portal.
+                </p>
+                <div class="logout-modal-actions">
+                    <button type="button" class="logout-modal-btn logout-modal-btn-cancel" id="logoutModalCancelBtn">
+                        <i class="fas fa-arrow-left"></i> Stay Logged In
+                    </button>
+                    <button type="button" class="logout-modal-btn logout-modal-btn-confirm" id="logoutModalConfirmBtn">
+                        <i class="fas fa-sign-out-alt"></i> Yes, Log Out
+                    </button>
+                </div>
+            </div>
+        `;
+        document.body.appendChild(modalOverlay);
+
+        const closeModal = () => {
+            modalOverlay.classList.remove("active");
+            modalOverlay.setAttribute("aria-hidden", "true");
+            pendingLogoutAction = null;
+        };
+
+        const closeBtn = modalOverlay.querySelector("#logoutModalCloseBtn");
+        const cancelBtn = modalOverlay.querySelector("#logoutModalCancelBtn");
+        const confirmBtn = modalOverlay.querySelector("#logoutModalConfirmBtn");
+
+        if (closeBtn) closeBtn.addEventListener("click", closeModal);
+        if (cancelBtn) cancelBtn.addEventListener("click", closeModal);
+
+        modalOverlay.addEventListener("click", (e) => {
+            if (e.target === modalOverlay) closeModal();
+        });
+
+        document.addEventListener("keydown", (e) => {
+            if (e.key === "Escape" && modalOverlay.classList.contains("active")) {
+                closeModal();
+            }
+        });
+
+        if (confirmBtn) {
+            confirmBtn.addEventListener("click", () => {
+                confirmBtn.disabled = true;
+                confirmBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Logging out...';
+                try {
+                    localStorage.removeItem("student_user");
+                    sessionStorage.removeItem("student_user");
+                } catch (err) {}
+
+                if (typeof pendingLogoutAction === "function") {
+                    pendingLogoutAction();
+                } else {
+                    const redirect = window.location.pathname.includes('/Frontend/') ? 'login.html?message=logged_out' : 'login.php?message=logged_out';
+                    window.location.href = redirect;
+                }
+            });
+        }
+    }
+    return modalOverlay;
+}
+
+function showLogoutConfirmation(actionCallback) {
+    pendingLogoutAction = actionCallback;
+    const modal = getOrCreateLogoutModal();
+    const confirmBtn = modal.querySelector("#logoutModalConfirmBtn");
+    if (confirmBtn) {
+        confirmBtn.disabled = false;
+        confirmBtn.innerHTML = '<i class="fas fa-sign-out-alt"></i> Yes, Log Out';
+    }
+    modal.classList.add("active");
+    modal.setAttribute("aria-hidden", "false");
+    const cancelBtn = modal.querySelector("#logoutModalCancelBtn");
+    if (cancelBtn) {
+        setTimeout(() => cancelBtn.focus(), 60);
+    }
+}
+
+function initLogout() {
+    // 1. Intercept any logout link or anchor pointing to logout
+    document.addEventListener("click", (e) => {
+        // If click is inside modal itself, do not intercept
+        if (e.target.closest("#logoutModalOverlay")) return;
+
+        const logoutTarget = e.target.closest(".logout-link, .logout-btn, a[href*='logout'], button[data-logout]");
+        if (logoutTarget) {
+            // If inside a form with action containing logout, let form submit handler take precedence
+            if (logoutTarget.closest("form[action*='logout']")) return;
+
+            e.preventDefault();
+            const targetHref = window.location.pathname.includes('/Frontend/') ? "login.html?message=logged_out" : "login.php?message=logged_out";
+
+            showLogoutConfirmation(() => {
+                try {
+                    localStorage.removeItem("student_user");
+                    sessionStorage.removeItem("student_user");
+                    fetch(getAuthApiUrl() + "?action=logout");
+                } catch (err) {}
+                window.location.href = targetHref;
+            });
+        }
+    });
+
+    // 2. Intercept secure POST logout forms (e.g. in admin_dashboard.php & student_dashboard.php)
+    document.addEventListener("submit", (e) => {
+        const form = e.target;
+        if (form && form.action && (form.action.includes("logout.php") || form.action.includes("logout"))) {
+            e.preventDefault();
+            showLogoutConfirmation(() => {
+                HTMLFormElement.prototype.submit.call(form);
+            });
+        }
+    });
+}
+
+/* ==================================================
+   DATABASE VIEWER TABLE (Admin Dashboard)
+================================================== */
+function initDbTable() {
+    const tbody = document.getElementById("dbUsersBody");
+    const refreshBtn = document.getElementById("refreshDbBtn");
+    if (!tbody) return;
+
+    function loadUsers() {
+        tbody.innerHTML = '<tr><td colspan="8" style="padding: 20px; text-align: center; color: var(--text-muted);"><i class="fas fa-spinner fa-spin"></i> Fetching records from MySQL database...</td></tr>';
+
+        fetch(getAuthApiUrl() + "?action=get_users")
+            .then(res => res.json())
+            .then(data => {
+                if (!data.success || !data.users || data.users.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="8" style="padding: 25px; text-align: center; color: var(--text-muted); font-size: 1rem;">No registered students found in database. <a href="registration.html" style="color: var(--primary); text-decoration: underline;">Register a student here</a></td></tr>';
+                    return;
+                }
+
+                tbody.innerHTML = data.users.map(u => `
+                    <tr style="border-bottom: 1px solid #f1f5f9;">
+                        <td style="padding: 12px 14px; font-weight: 600;">#${u.id}</td>
+                        <td style="padding: 12px 14px; font-weight: 500;">${escapeHtml(u.full_name)}</td>
+                        <td style="padding: 12px 14px;"><a href="mailto:${escapeHtml(u.email)}" style="color: var(--primary);">${escapeHtml(u.email)}</a></td>
+                        <td style="padding: 12px 14px;">${escapeHtml(u.mobile || '-')}</td>
+                        <td style="padding: 12px 14px;"><span class="badge badge-primary">${escapeHtml(u.course || 'BTech')}</span></td>
+                        <td style="padding: 12px 14px;">${escapeHtml(u.year ? 'Year ' + u.year : '-')}</td>
+                        <td style="padding: 12px 14px;">${u.role === 'Admin' ? '<span class="badge" style="background: #4f46e5; color: #fff; padding: 3px 8px; border-radius: 12px; font-size: 0.75rem; font-weight: 700;">Admin</span>' : '<span class="badge" style="background: #0284c7; color: #fff; padding: 3px 8px; border-radius: 12px; font-size: 0.75rem; font-weight: 700;">Student</span>'}</td>
+                        <td style="padding: 12px 14px; color: var(--text-muted); font-size: 0.85rem;">${escapeHtml(u.created_at || '-')}</td>
+                    </tr>
+                `).join('');
+            })
+            .catch(err => {
+                console.error("Failed to load DB table:", err);
+                tbody.innerHTML = '<tr><td colspan="8" style="padding: 20px; text-align: center; color: #ef4444;"><i class="fas fa-exclamation-triangle"></i> Error connecting to database. Ensure MySQL is running in XAMPP.</td></tr>';
+            });
+    }
+
+    function escapeHtml(str) {
+        if (!str) return '';
+        return String(str).replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+    }
+
+    loadUsers();
+    if (refreshBtn) refreshBtn.addEventListener("click", loadUsers);
+}
+
+

@@ -10,6 +10,64 @@
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
     />
+    <!-- Anti-Cache Meta Tags to prevent Browser Back Button caching -->
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Expires" content="0" />
+
+    <!-- Hide body by default until authentication is strictly verified -->
+    <style>
+      body.dashboard-layout { display: none !important; }
+    </style>
+
+    <!-- Strict Authentication & Role Guard: Denies access if not logged in or after logout -->
+    <script>
+      (function() {
+        function verifyAuth() {
+          let user = null;
+          try {
+            user = JSON.parse(localStorage.getItem("student_user") || sessionStorage.getItem("student_user") || "null");
+          } catch(e) {}
+
+          // 1. If no user or empty object, access is strictly denied
+          if (!user || !user.id || !user.full_name) {
+            try {
+              localStorage.removeItem("student_user");
+              sessionStorage.removeItem("student_user");
+            } catch(e) {}
+            window.location.replace("login.html?error=access_denied");
+            return false;
+          }
+
+          // 2. If user is an Admin, redirect to Admin dashboard
+          if (user.role === 'Admin') {
+            window.location.replace("admin.html?notice=admin_redirect");
+            return false;
+          }
+
+          // 3. User is authorized: reveal page
+          if (document.body) {
+            document.body.style.setProperty("display", "flex", "important");
+          } else {
+            window.addEventListener("DOMContentLoaded", function() {
+              document.body.style.setProperty("display", "flex", "important");
+            });
+          }
+          return true;
+        }
+
+        // Execute immediately
+        verifyAuth();
+
+        // Handle BFCache (when user presses browser Back/Forward button after logout!)
+        window.addEventListener("pageshow", function(event) {
+          verifyAuth();
+        });
+        window.addEventListener("popstate", function() {
+          verifyAuth();
+        });
+      })();
+    </script>
   </head>
   <body class="dashboard-layout">
     <aside class="sidebar" id="sidebar">
@@ -70,6 +128,22 @@
           </button>
         </div>
         <div class="header-right">
+          <button
+            id="test-access-denied-btn"
+            class="timeout-test-btn"
+            title="Demonstrate Dashboard Access Denied After Logout (Lab / Screenshot Demo)"
+            style="background: rgba(220, 38, 38, 0.1); color: #dc2626; border: 1.5px solid rgba(220, 38, 38, 0.4); border-radius: 20px; padding: 6px 12px; font-size: 0.8rem; font-weight: 600; cursor: pointer; margin-right: 8px; display: inline-flex; align-items: center; gap: 6px;"
+          >
+            <i class="fas fa-shield-alt"></i> Test Access Denied
+          </button>
+          <button
+            id="simulate-timeout-btn"
+            class="timeout-test-btn"
+            title="Simulate Inactivity Timeout (Demonstrates Session Expiry)"
+            style="background: rgba(245, 158, 11, 0.1); color: #d97706; border: 1.5px solid rgba(245, 158, 11, 0.4); border-radius: 20px; padding: 6px 12px; font-size: 0.8rem; font-weight: 600; cursor: pointer; margin-right: 12px; display: inline-flex; align-items: center; gap: 6px;"
+          >
+            <i class="fas fa-hourglass-end"></i> Test Timeout
+          </button>
           <button
             id="theme-toggle"
             class="theme-toggle-btn"
@@ -323,6 +397,59 @@
     <script src="../js/faqs.js?v=1"></script>
     <script src="../js/script.js?v=1790888521566"></script>
 
+    <!-- Inactivity Session Timeout Watcher -->
+    <script>
+      (function() {
+        let timeoutSeconds = 120; // Auto-timeout after 2 minutes of idle time
+        let lastActivity = Date.now();
+
+        const resetTimer = () => { lastActivity = Date.now(); };
+        ['mousemove', 'keydown', 'click', 'scroll', 'touchstart'].forEach(evt => {
+          window.addEventListener(evt, resetTimer, { passive: true });
+        });
+
+        function performSessionTimeout() {
+          try {
+            localStorage.removeItem("student_user");
+            sessionStorage.removeItem("student_user");
+            if (typeof getAuthApiUrl === 'function') {
+              fetch(getAuthApiUrl() + "?action=logout");
+            }
+          } catch(e) {}
+          window.location.href = "login.html?error=session_timeout";
+        }
+
+        // Check idle time every 2 seconds
+        setInterval(() => {
+          if (Date.now() - lastActivity > timeoutSeconds * 1000) {
+            performSessionTimeout();
+          }
+        }, 2000);
+
+        // Immediate Test Timeout Button handler for easy screenshots
+        const testBtn = document.getElementById("simulate-timeout-btn");
+        if (testBtn) {
+          testBtn.addEventListener("click", () => {
+            performSessionTimeout();
+          });
+        }
+
+        // Immediate Test Access Denied Button handler for easy screenshots
+        const testAccessDeniedBtn = document.getElementById("test-access-denied-btn");
+        if (testAccessDeniedBtn) {
+          testAccessDeniedBtn.addEventListener("click", () => {
+            try {
+              localStorage.removeItem("student_user");
+              sessionStorage.removeItem("student_user");
+              if (typeof getAuthApiUrl === 'function') {
+                fetch(getAuthApiUrl() + "?action=logout");
+              }
+            } catch(e) {}
+            window.location.replace("login.html?error=access_denied");
+          });
+        }
+      })();
+    </script>
   </body>
 </html>
 

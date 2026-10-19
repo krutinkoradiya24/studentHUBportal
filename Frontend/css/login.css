@@ -1,1 +1,187 @@
-/* login.css */
+/* ==========================================================
+   Student Hub Portal - Dual Role Login Styling (Student vs Admin)
+   ========================================================== */
+
+.auth-layout {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: radial-gradient(circle at top, #f8fafc 0%, #e2e8f0 100%);
+    padding: 20px;
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+}
+
+.auth-container {
+    width: 100%;
+    max-width: 480px;
+}
+
+.auth-card {
+    background: #ffffff;
+    border-radius: 16px;
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.08), 0 8px 10px -6px rgba(0, 0, 0, 0.04);
+    border: 1px solid #e2e8f0;
+    padding: 35px 30px;
+    transition: all 0.3s ease;
+}
+
+/* Role Selector Tabs */
+.role-tabs {
+    display: flex;
+    background: #f1f5f9;
+    border-radius: 12px;
+    padding: 5px;
+    margin-bottom: 25px;
+    gap: 4px;
+}
+
+.role-tab {
+    flex: 1;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 11px 16px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: #64748b;
+    border: none;
+    background: transparent;
+    border-radius: 9px;
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.role-tab:hover {
+    color: #1e293b;
+}
+
+.role-tab.active-student {
+    background: #ffffff;
+    color: #0284c7;
+    box-shadow: 0 2px 6px rgba(2, 132, 199, 0.15);
+}
+
+.role-tab.active-admin {
+    background: #ffffff;
+    color: #4f46e5;
+    box-shadow: 0 2px 6px rgba(79, 70, 229, 0.15);
+}
+
+/* Header Text */
+.auth-header {
+    text-align: center;
+    margin-bottom: 22px;
+}
+
+.auth-header h2 {
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: #0f172a;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    transition: color 0.2s ease;
+}
+
+.auth-header p {
+    color: #64748b;
+    font-size: 0.9rem;
+    margin-top: 6px;
+}
+
+/* Role Indicator Pill */
+.role-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    margin-bottom: 10px;
+}
+
+.pill-student {
+    background: #f0f9ff;
+    color: #0284c7;
+    border: 1px solid #bae6fd;
+}
+
+.pill-admin {
+    background: #eef2ff;
+    color: #4f46e5;
+    border: 1px solid #c7d2fe;
+}
+
+/* Dynamic Button Theming */
+.btn-student {
+    background-color: #0284c7 !important;
+    border-color: #0284c7 !important;
+}
+
+.btn-student:hover {
+    background-color: #0369a1 !important;
+}
+
+.btn-admin {
+    background-color: #4f46e5 !important;
+    border-color: #4f46e5 !important;
+}
+
+.btn-admin:hover {
+    background-color: #4338ca !important;
+}
+
+/* Credential Hints */
+.credentials-box {
+    margin-top: 22px;
+    padding: 14px;
+    background: #f8fafc;
+    border: 1px dashed #cbd5e1;
+    border-radius: 10px;
+    font-size: 0.85rem;
+}
+
+.credentials-box strong {
+    display: block;
+    margin-bottom: 8px;
+    color: #334155;
+    font-size: 0.85rem;
+}
+
+.cred-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 6px 8px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background 0.15s ease;
+}
+
+.cred-item:hover {
+    background: #f1f5f9;
+}
+
+.cred-badge {
+    font-size: 0.72rem;
+    font-weight: 700;
+    padding: 2px 7px;
+    border-radius: 4px;
+    text-transform: uppercase;
+}
+
+.cred-badge-admin {
+    background: #eef2ff;
+    color: #4f46e5;
+}
+
+.cred-badge-student {
+    background: #f0f9ff;
+    color: #0284c7;
+}

@@ -34,6 +34,8 @@
           <div id="successMessage" style="display: none; background: var(--success); color: white; padding: 15px; border-radius: 8px; margin-bottom: 20px; text-align: center; font-weight: bold;">
             Registration successful!
           </div>
+          <!-- Error Message Container -->
+          <div id="errorMessage" style="display: none; background: #ef4444; color: white; padding: 15px; border-radius: 8px; margin-bottom: 20px; text-align: center; font-weight: 600;"></div>
 
           <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; align-items: start;">
             <!-- 1. Full Name -->
@@ -127,7 +129,7 @@
           
           <div style="display: flex; gap: 15px; margin-top: 20px;">
             <!-- 10. Register Button -->
-            <button type="submit" class="btn btn-primary" style="flex: 1;">Register Account</button>
+            <button type="submit" id="registerBtn" class="btn btn-primary" style="flex: 1;">Register Account</button>
             <!-- 11. Reset Button -->
             <button type="reset" class="btn btn-secondary" style="flex: 1;">Reset</button>
           </div>

@@ -14,8 +14,9 @@
   <body>
     <header class="landing-header">
       <div class="logo-container"><img src="images.png" alt="Student Hub Logo" style="height: 50px; object-fit: contain;" /></div>
-      <nav>
-        <a href="login.html" class="btn btn-outline">Login</a>
+      <nav style="display: flex; gap: 10px; align-items: center;">
+        <a href="login.html?role=student" class="btn btn-outline" style="color: #0284c7; border-color: #0284c7;"><i class="fas fa-user-graduate"></i> Student Login</a>
+        <a href="login.html?role=admin" class="btn btn-outline" style="color: #4f46e5; border-color: #4f46e5;"><i class="fas fa-user-shield"></i> Admin Portal</a>
         <a href="registration.html" class="btn btn-primary">Register</a>
       </nav>
     </header>
@@ -23,10 +24,16 @@
       <div class="hero-content">
         <h1>Welcome to Student Hub Portal</h1>
         <p>
-          Your one-stop destination for all college activities, resources, and
-          updates.
+          Your centralized destination for college academics, courses, assignments, attendance, and administrative oversight.
         </p>
-        <a href="login.html" class="btn btn-primary btn-large">Get Started</a>
+        <div style="display: flex; gap: 15px; justify-content: center; flex-wrap: wrap; margin-top: 20px;">
+          <a href="login.html?role=student" class="btn btn-primary btn-large" style="background-color: #0284c7; border-color: #0284c7;">
+            <i class="fas fa-user-graduate"></i> Student Login
+          </a>
+          <a href="login.html?role=admin" class="btn btn-primary btn-large" style="background-color: #4f46e5; border-color: #4f46e5;">
+            <i class="fas fa-user-shield"></i> Admin Login
+          </a>
+        </div>
       </div>
     </section>
     <section class="slider-section" style="padding: 40px 20px">

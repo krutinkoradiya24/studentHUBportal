@@ -1,42 +1,11 @@
 [
     {
-        "id": "6ac540f7563fa",
-        "name": "KORADIYA KRUTIN",
-        "email": "25cs034@charusat.edu.in",
-        "subject": "WDF",
-        "message": "hello evrey one how ar you",
-        "submitted_at": "2026-10-06 20:41:59"
-    },
-    {
-        "id": "6ac540facddb1",
-        "name": "KORADIYA KRUTIN",
-        "email": "25cs034@charusat.edu.in",
-        "subject": "WDF",
-        "message": "hello evrey one how ar you",
-        "submitted_at": "2026-10-06 20:42:02"
-    },
-    {
-        "id": "6ac541099c5b4",
-        "name": "krutin koradiya",
-        "email": "25cs034@charusat.edu.in",
-        "subject": "WDF",
-        "message": "hello my name is krutin",
-        "submitted_at": "2026-10-06 20:42:17"
-    },
-    {
-        "id": "6ac5414d813b9",
-        "name": "krutin koradiya",
-        "email": "25cs034@charusat.edu.in",
-        "subject": "WDF",
-        "message": "my name is krutin koradiya and i am work on the student hub portal",
-        "submitted_at": "2026-10-06 20:43:25"
-    },
-    {
-        "id": "6ac54331b127f",
-        "name": "krutin koradiya",
-        "email": "25cs034@charusat.edu.in",
-        "subject": "WDF",
-        "message": "my name is krutin koradiya and i am work on the student hub portal",
-        "submitted_at": "2026-10-06 20:51:29"
+        "id": "651a2b3c4d5e6",
+        "name": "Rahul Patel",
+        "email": "rahul@example.com",
+        "phone": "9876543210",
+        "subject": "Admission Query",
+        "message": "I want information about admission for the upcoming semester.",
+        "submitted_at": "2026-10-06 18:30:00"
     }
 ]
