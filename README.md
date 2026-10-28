@@ -116,19 +116,19 @@ Both endpoints route directly to `index.php`, which inspects the session and dis
 
 ### Step 2: Database Creation & SQL Schema Import
 
-The database export file is located at `user_registration.sql`.
+The complete canonical database dump is located at `studenthub.sql` (and `data/schema.sql`).
 
 #### Option A: Using phpMyAdmin
 1. Open your browser and navigate to `http://localhost/phpmyadmin/`.
 2. Click on the **Import** tab.
-3. Click **Choose File** and select `user_registration.sql`.
+3. Click **Choose File** and select `studenthub.sql`.
 4. Click **Import** (or **Go**) at the bottom.
-5. The database `user_registration_db` and table `users` will be created with sample accounts.
+5. The database `user_registration_db` with all 6 tables (`users`, `students`, `events`, `timetables`, `notices`, `attendance`) will be created and populated with sample data.
 
 #### Option B: Using MySQL Command Line
 Run the following in PowerShell:
 ```powershell
-Get-Content "c:\xampp\htdocs\STUDENTPORTAL\user_registration.sql" | & "C:\xampp\mysql\bin\mysql.exe" -u root
+Get-Content "c:\xampp\htdocs\STUDENTPORTAL\studenthub.sql" | & "C:\xampp\mysql\bin\mysql.exe" -u root
 ```
 
 ---
