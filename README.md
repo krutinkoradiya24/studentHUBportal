@@ -1,4 +1,15 @@
-# Secure PHP MySQLi Authentication System with Role-Based Dashboards
+# Student Hub Portal — Secure PHP RBAC Authentication System
+
+[![GitHub Repo](https://img.shields.io/badge/GitHub-krutinkoradiya24%2FstudentHUBportal-blue?logo=github)](https://github.com/krutinkoradiya24/studentHUBportal)
+[![PHP](https://img.shields.io/badge/PHP-8.2-purple?logo=php)](https://www.php.net/)
+[![MySQL](https://img.shields.io/badge/MariaDB-10.4-orange?logo=mysql)](https://mariadb.org/)
+[![Tests](https://img.shields.io/badge/Tests-65%2F65%20PASS-brightgreen)](./TEST_AND_SECURITY_REPORT.md)
+[![License](https://img.shields.io/badge/License-Academic-lightgrey)](./README.md)
+
+> **🔗 GitHub Repository**: [https://github.com/krutinkoradiya24/studentHUBportal](https://github.com/krutinkoradiya24/studentHUBportal)
+> **🗄️ Database Dump**: [`studenthub.sql`](./studenthub.sql) — Import into phpMyAdmin or MySQL CLI
+> **📋 Test & Security Report**: [`TEST_AND_SECURITY_REPORT.md`](./TEST_AND_SECURITY_REPORT.md)
+> **📸 Screenshots / Demo**: [`tests/reports/screenshots/`](./tests/reports/screenshots/)
 
 A complete, production-grade User Authentication and Role-Based Access Control (RBAC) System built with **PHP 8+**, **MySQLi (Strict Mode & Prepared Statements)**, **HTML5**, **CSS3**, and **MySQL/MariaDB**.
 
