@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Student Hub Portal - Login</title>
+    <title>Student Hub Portal - Sign In</title>
     <link rel="stylesheet" href="../css/style.css?v=1790904735.40533" />
     <link rel="stylesheet" href="../css/login.css?v=1790895069.40284" />
     <link
@@ -15,40 +15,202 @@
     <div class="auth-container">
       <div class="auth-card">
         <div class="auth-header">
-          <h2>Student Login</h2>
-          <p>Welcome back! Please login to your account.</p>
+          <h2>Sign In</h2>
+          <p>Sign in with your registered credentials to access your account.</p>
         </div>
-        <form action="dashboard.html">
+
+        <!-- Registration Success Notification -->
+        <div id="loginSuccessBanner" style="display: none; background: #ecfdf5; border: 1px solid #10b981; color: #047857; padding: 12px 14px; border-radius: 8px; margin-bottom: 16px; font-size: 0.88rem; align-items: center; gap: 8px;">
+          <i class="fas fa-check-circle" style="color: #10b981; font-size: 1.1rem;"></i>
+          <span>Registration successful! You can now sign in with your email and password.</span>
+        </div>
+
+        <!-- Error Notification Banner -->
+        <div id="loginErrorBanner" style="display: none; background: #fef2f2; border: 1px solid #ef4444; color: #b91c1c; padding: 12px 14px; border-radius: 8px; margin-bottom: 16px; font-size: 0.88rem; align-items: center; gap: 8px;">
+          <i class="fas fa-exclamation-circle" style="color: #ef4444; font-size: 1.1rem;"></i>
+          <span id="loginErrorText">Invalid email or password.</span>
+        </div>
+
+        <!-- Single Unified Sign-in Form -->
+        <form id="unifiedLoginForm" onsubmit="handleUnifiedLogin(event)">
           <div class="form-group">
-            <label>Email or Student ID</label>
-            <input type="text" required placeholder="Enter ID or Email" />
+            <label for="loginEmail">Email Address or Mobile</label>
+            <input 
+              type="text" 
+              id="loginEmail" 
+              required 
+              placeholder="Enter registered email or mobile" 
+              autocomplete="username" 
+            />
           </div>
           <div class="form-group">
-            <label>Password</label>
+            <label for="password">Password</label>
             <div class="password-input">
               <input
                 type="password"
                 id="password"
                 required
-                placeholder="Enter password"
+                placeholder="Enter your password"
+                autocomplete="current-password"
               />
               <i class="fas fa-eye" id="toggle-password"></i>
             </div>
           </div>
           <div class="form-options">
-            <label><input type="checkbox" /> Remember me</label>
+            <label><input type="checkbox" id="rememberMe" /> Remember me</label>
             <a href="#">Forgot Password?</a>
           </div>
-          <button type="submit" class="btn btn-primary btn-block">Login</button>
+          <button type="submit" class="btn btn-primary btn-block">Sign In</button>
         </form>
-        <p class="auth-footer">
-          Don't have an account? <a href="registration.html">Register</a>
+
+        <p class="auth-footer" style="margin-top: 18px;">
+          Don't have an account? <a href="registration.html" style="font-weight: 600; color: var(--primary);">Register here</a>
         </p>
+
+        <!-- Authorized Credentials Helper Box -->
+        <div style="background: #f8fafc; border: 1px dashed #cbd5e1; border-radius: 8px; padding: 12px 14px; margin-top: 20px; font-size: 0.82rem; color: #64748b; text-align: left;">
+          <strong style="color: #1e293b; display: block; margin-bottom: 6px;">
+            <i class="fas fa-key" style="color: #4f46e5;"></i> Authorized Credentials:
+          </strong>
+          <div style="display: flex; flex-direction: column; gap: 5px;">
+            <div>
+              <strong style="color: #4f46e5;">Admin:</strong> <code>krutin@gmail.com</code> &nbsp;|&nbsp; Pass: <code>Krutin@1234</code>
+            </div>
+            <div>
+              <strong style="color: #0d9488;">Student:</strong> Registered students only (Demo: <code>student@example.com</code> / <code>student123</code> or <a href="registration.html" style="color: #0d9488; text-decoration: underline; font-weight: 600;">Register New</a>)
+            </div>
+          </div>
+        </div>
+
+        <script>
+        // Check for URL query params on load
+        document.addEventListener('DOMContentLoaded', function() {
+          const params = new URLSearchParams(window.location.search);
+          if (params.get('registered') === 'true') {
+            const successBanner = document.getElementById('loginSuccessBanner');
+            if (successBanner) successBanner.style.display = 'flex';
+          }
+          const remembered = localStorage.getItem('studenthub_remembered_email');
+          if (remembered) {
+            const emailInput = document.getElementById('loginEmail');
+            if (emailInput) emailInput.value = remembered;
+            const rememberCheck = document.getElementById('rememberMe');
+            if (rememberCheck) rememberCheck.checked = true;
+          }
+        });
+
+        // Retrieve registered students from localStorage (seeded with default demo student)
+        function getRegisteredUsersList() {
+          let users = [];
+          try {
+            users = JSON.parse(localStorage.getItem('studenthub_registered_users') || '[]');
+          } catch(e) {
+            users = [];
+          }
+          const defaultStudent = {
+            fullName: 'John Student',
+            email: 'student@example.com',
+            mobile: '9876543210',
+            password: 'student123',
+            course: 'BTech',
+            year: '2',
+            role: 'Student'
+          };
+          if (!users.some(u => u.email && u.email.toLowerCase() === defaultStudent.email.toLowerCase())) {
+            users.push(defaultStudent);
+            localStorage.setItem('studenthub_registered_users', JSON.stringify(users));
+          }
+          return users;
+        }
+
+        function handleUnifiedLogin(e) {
+          e.preventDefault();
+          const emailInput = document.getElementById('loginEmail');
+          const passInput = document.getElementById('password');
+          const rememberCheck = document.getElementById('rememberMe');
+          const errorBanner = document.getElementById('loginErrorBanner');
+          const successBanner = document.getElementById('loginSuccessBanner');
+
+          if (errorBanner) errorBanner.style.display = 'none';
+          if (successBanner) successBanner.style.display = 'none';
+
+          const identifier = (emailInput.value || '').trim();
+          const emailLower = identifier.toLowerCase();
+          const password = passInput.value || '';
+
+          if (!identifier || !password) {
+            showError('Please enter both your email address/mobile and password.');
+            return;
+          }
+
+          // Remember me handling
+          if (rememberCheck && rememberCheck.checked) {
+            localStorage.setItem('studenthub_remembered_email', identifier);
+          } else {
+            localStorage.removeItem('studenthub_remembered_email');
+          }
+
+          // 1. ADMIN LOGIN: Dedicated credentials krutin@gmail.com / Krutin@1234
+          if (
+            (emailLower === 'krutin@gmail.com' && password === 'Krutin@1234') ||
+            (emailLower === 'admin@example.com' && (password === 'admin123' || password === 'Krutin@1234'))
+          ) {
+            const adminUser = {
+              fullName: 'Krutin Koradiya',
+              email: 'krutin@gmail.com',
+              role: 'Admin'
+            };
+            localStorage.setItem('studenthub_current_user', JSON.stringify(adminUser));
+            window.location.href = 'admin.html';
+            return;
+          }
+
+          // 2. REGISTERED STUDENTS CHECK: Strictly require registration
+          const registeredUsers = getRegisteredUsersList();
+          const matchedStudent = registeredUsers.find(u => 
+            (u.email && u.email.toLowerCase() === emailLower) || 
+            (u.mobile && u.mobile === identifier)
+          );
+
+          if (!matchedStudent) {
+            // Unregistered user rejected!
+            showError('Account not found. Only registered students and administrators can log in. Please register first.');
+            return;
+          }
+
+          // Registered student found: verify password
+          if (matchedStudent.password !== password) {
+            showError('Invalid password. Please verify your password and try again.');
+            return;
+          }
+
+          // Successful student login
+          const studentSession = {
+            fullName: matchedStudent.fullName,
+            email: matchedStudent.email,
+            mobile: matchedStudent.mobile,
+            course: matchedStudent.course,
+            year: matchedStudent.year,
+            role: 'Student'
+          };
+          localStorage.setItem('studenthub_current_user', JSON.stringify(studentSession));
+          window.location.href = 'dashboard.html';
+        }
+
+        function showError(msg) {
+          const errorBanner = document.getElementById('loginErrorBanner');
+          const errorText = document.getElementById('loginErrorText');
+          if (errorBanner && errorText) {
+            errorText.textContent = msg;
+            errorBanner.style.display = 'flex';
+          } else {
+            alert(msg);
+          }
+        }
+        </script>
       </div>
     </div>
 
-    
-  
     <script src="../js/api.js?v=1"></script>
     <script src="../js/utils.js?v=1"></script>
     <script src="../js/pagination.js?v=1"></script>
@@ -56,7 +218,5 @@
     <script src="../js/events.js?v=1"></script>
     <script src="../js/faqs.js?v=1"></script>
     <script src="../js/script.js?v=1790888521566"></script>
-
   </body>
 </html>
-

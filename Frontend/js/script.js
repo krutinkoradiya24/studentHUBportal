@@ -105,14 +105,32 @@ function initMobileMenu() {
     });
   }
 
-  // Retain existing user profile logic globally
+  // Update user profile display if logged in
+  const currentUser = JSON.parse(localStorage.getItem("studenthub_current_user") || "null");
   const userProfile = document.querySelector(".user-profile");
   if (userProfile) {
+    if (currentUser && currentUser.fullName) {
+      const nameSpan = userProfile.querySelector("span");
+      const avatarImg = userProfile.querySelector("img");
+      if (nameSpan) nameSpan.textContent = currentUser.fullName;
+      if (avatarImg) {
+        avatarImg.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(currentUser.fullName)}&background=random`;
+        avatarImg.alt = currentUser.fullName;
+      }
+    }
     userProfile.style.cursor = "pointer";
     userProfile.addEventListener("click", () => {
       window.location.href = "profile.html";
     });
   }
+
+  // Clear session on logout link click
+  document.querySelectorAll(".logout-link").forEach((link) => {
+    link.addEventListener("click", () => {
+      localStorage.removeItem("studenthub_current_user");
+      sessionStorage.removeItem("studenthub_current_user");
+    });
+  });
 
   // Toggle Password in auth pages
   const togglePassword = document.getElementById("toggle-password");
@@ -504,13 +522,61 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
         if (isValid) {
+            const enteredEmail = emailInput.value.trim().toLowerCase();
+            const enteredMobile = mobileInput.value.trim();
+            const enteredName = nameInput.value.trim();
+            const enteredPassword = passInput.value;
+            const enteredCourse = courseSelect.value;
+            const enteredYear = yearSelect.value;
+            let enteredGender = "Not Specified";
+            for (const radio of genderRadios) {
+                if (radio.checked) enteredGender = radio.value;
+            }
+
+            // Retrieve registered students
+            let registeredUsers = [];
+            try {
+                registeredUsers = JSON.parse(localStorage.getItem("studenthub_registered_users") || "[]");
+            } catch (err) {
+                registeredUsers = [];
+            }
+
+            // Reject if email or mobile is already registered
+            const existing = registeredUsers.find(u => 
+                (u.email && u.email.toLowerCase() === enteredEmail) || 
+                (u.mobile && u.mobile === enteredMobile)
+            );
+            if (existing) {
+                showError(emailInput, "emailError", true);
+                const emailErrorEl = document.getElementById("emailError");
+                if (emailErrorEl) {
+                    emailErrorEl.textContent = "This email or mobile is already registered. Please sign in.";
+                    emailErrorEl.style.display = "block";
+                }
+                return;
+            }
+
+            // Persist the newly registered student
+            const newStudent = {
+                fullName: enteredName,
+                email: enteredEmail,
+                mobile: enteredMobile,
+                password: enteredPassword,
+                course: enteredCourse,
+                year: enteredYear,
+                gender: enteredGender,
+                role: "Student",
+                registeredAt: new Date().toISOString()
+            };
+            registeredUsers.push(newStudent);
+            localStorage.setItem("studenthub_registered_users", JSON.stringify(registeredUsers));
+
             successMsg.style.display = "block";
-            // Pop up an alert as well to ensure they see it
-            alert("Registration successful!");
-            // Redirect to login page after a short delay
+            successMsg.textContent = "Registration successful! Redirecting to login...";
+            alert("Registration successful! You can now log in with your credentials.");
             setTimeout(() => {
-                window.location.href = "login.html";
-            }, 1500);
+                window.location.href = "login.html?registered=true";
+            }, 1000);
         }
     });
 
